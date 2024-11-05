@@ -6,10 +6,13 @@ import { Header } from "./components/Header";
 
 // import Grid from "@mui/material/Grid";　非推奨？
 import Grid from "@mui/material/Grid2";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 const App = () => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [offset, setOffset] = useState(0);
+  const [inputValue, setInputValue] = useState("");
 
   let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=20&offset=${offset}`;
 
@@ -62,6 +65,21 @@ const App = () => {
     }
   };
 
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleInputSubmit = (event) => {
+    //デフォルト動作の無効　送信時のリロードを止める
+    event.preventDefault();
+
+    const num = parseInt(inputValue, 10);
+    if (num > 0 && num < 67) {
+      setOffset(num * 20 - 20);
+    }
+    setInputValue("");
+  };
+
   useEffect(() => {
     fetchApi();
   }, []);
@@ -78,8 +96,86 @@ const App = () => {
   return (
     <div>
       <Header />
-      <button onClick={downOffset}>down</button>
-      <button onClick={upOffset}>up</button>
+      {/* <form onSubmit={handleInputSubmit}> */}
+      {/* <input
+          type="number"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="page number (limit 65)"
+        /> */}
+
+      {/* <TextField
+          id="outlined-number"
+          label="page number (limit 65)"
+          type="number"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="page number (limit 65)"
+        />
+        <Button variant="contained" type="submit">
+          Go
+        </Button>
+      </form>
+      <Button variant="contained" onClick={downOffset}>
+        down
+      </Button>
+      <Button variant="contained" onClick={upOffset}>
+        up
+      </Button> */}
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <form
+          onSubmit={handleInputSubmit}
+          style={{
+            display: "flex",
+            marginTop: "20px",
+            gap: "8px",
+          }}
+        >
+          <TextField
+            id="outlined-number"
+            label="page number (1〜66)"
+            type="number"
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder="page number (1〜66)"
+            sx={{ width: "300px", height: "55px" }}
+          />
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ width: "30px", height: "55px" }}
+          >
+            Go
+          </Button>
+        </form>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            margin: "10px",
+            marginBottom: "20px",
+          }}
+        >
+          <Button
+            variant="contained"
+            onClick={downOffset}
+            sx={{ backgroundColor: "#f50057" }}
+          >
+            down
+          </Button>
+          <Button variant="contained" onClick={upOffset}>
+            up
+          </Button>
+        </div>
+      </div>
+
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}
@@ -93,8 +189,26 @@ const App = () => {
           ) : null
         )}
       </Grid>
-      <button onClick={downOffset}>down</button>
-      <button onClick={upOffset}>up</button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          marginTop: "20px",
+          marginBottom: "40px",
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={downOffset}
+          sx={{ backgroundColor: "#f50057" }}
+        >
+          down
+        </Button>
+        <Button variant="contained" onClick={upOffset}>
+          up
+        </Button>
+      </div>
     </div>
   );
 };
