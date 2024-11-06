@@ -38,7 +38,7 @@ export const PopupCard = ({ details, open, handleClose }) => {
       keepMounted
       onClose={handleClose}
       PaperProps={{
-        sx: { width: "60%", height: "85%", margin: "auto" }, //中央に配置
+        sx: { width: "60%", height: "90%", margin: "auto" }, //中央に配置
       }}
     >
       <DialogContent

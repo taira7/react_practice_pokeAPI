@@ -7,8 +7,8 @@ import Button from "@mui/material/Button";
 
 export const Header = () => {
   return (
-    <Box sx={{ flexGrow: 1, width: "100%" }}>
-      <AppBar position="static" sx={{ width: "100vw" }}>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" sx={{ width: "100%" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             PokemonAPI

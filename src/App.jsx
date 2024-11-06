@@ -14,7 +14,8 @@ const App = () => {
   const [offset, setOffset] = useState(0);
   const [inputValue, setInputValue] = useState("");
 
-  let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=20&offset=${offset}`;
+  const apiLimit = 24; //カード数 2,3,4の公倍数
+  let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
 
   const fetchApi = async () => {
     try {
@@ -56,12 +57,12 @@ const App = () => {
   };
 
   const upOffset = () => {
-    setOffset(offset + 20);
+    setOffset(offset + apiLimit);
   };
 
   const downOffset = () => {
-    if (offset > 19) {
-      setOffset(offset - 20);
+    if (offset > apiLimit - 1) {
+      setOffset(offset - apiLimit);
     }
   };
 
@@ -74,8 +75,8 @@ const App = () => {
     event.preventDefault();
 
     const num = parseInt(inputValue, 10);
-    if (num > 0 && num < 67) {
-      setOffset(num * 20 - 20);
+    if (num > 0 && num < 56) {
+      setOffset(num * apiLimit - apiLimit);
     }
     setInputValue("");
   };
@@ -94,73 +95,114 @@ const App = () => {
   }, [offset]);
 
   return (
-    <div>
-      <Header />
-      {/* <form onSubmit={handleInputSubmit}> */}
-      {/* <input
-          type="number"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="page number (limit 65)"
-        /> */}
-
-      {/* <TextField
-          id="outlined-number"
-          label="page number (limit 65)"
-          type="number"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="page number (limit 65)"
-        />
-        <Button variant="contained" type="submit">
-          Go
-        </Button>
-      </form>
-      <Button variant="contained" onClick={downOffset}>
-        down
-      </Button>
-      <Button variant="contained" onClick={upOffset}>
-        up
-      </Button> */}
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <form
-          onSubmit={handleInputSubmit}
-          style={{
-            display: "flex",
-            marginTop: "20px",
-            gap: "8px",
-          }}
-        >
-          <TextField
-            id="outlined-number"
-            label="page number (1〜66)"
-            type="number"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder="page number (1〜66)"
-            sx={{ width: "300px", height: "55px" }}
-          />
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{ width: "30px", height: "55px" }}
-          >
-            Go
-          </Button>
-        </form>
+    <div style={{
+      backgroundColor: "#fffaf0",
+      minHeight: "100vh", // 画面全体の高さ
+      minWidth: "98vw", //横スクロールバー発生対策で98vw　縦スクロールバーの幅も含めて計算するらしい？
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      < Header />
+      <div style={{ flex: 1 }}>
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <form
+            onSubmit={handleInputSubmit}
+            style={{
+              display: "flex",
+              marginTop: "20px",
+              gap: "8px",
+            }}
+          >
+            <TextField
+              id="outlined-number"
+              label="page number (1〜55)"
+              type="number"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="page number (1〜55)"
+              sx={{ width: "300px", height: "55px" }}
+              style={{ backgroundColor: "#ffffff" }}
+            />
+            <Button
+              variant="contained"
+              type="submit"
+              sx={{ width: "30px", height: "55px" }}
+            >
+              Go
+            </Button>
+          </form>
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              margin: "10px",
+              marginBottom: "20px",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={downOffset}
+              sx={{ backgroundColor: "#f50057" }}
+            >
+              down
+            </Button>
+            <Button variant="contained" onClick={upOffset}>
+              up
+            </Button>
+          </div>
+        </div>
+
+        {/* レスポンシブ未対応 */}
+
+        {/* 候補１ */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center" }}>
+          {pokemonDetails.map((pokemon, index) =>
+            pokemon ? (
+              <div
+                key={index}
+                style={{
+                  flex: "1 1 20%", // % の幅で並べている（要調整）
+                  maxWidth: "400px", // カードの最大幅
+                  padding: "20px",
+                }}
+              >
+                <PokemonCard props={pokemon} />
+              </div>
+            ) : null
+          )}
+        </div>
+
+        {/* 候補２ */}
+        {/* <div >
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+          >
+            {pokemonDetails.map((pokemon, index) =>
+              pokemon ? (
+                <Grid key={index} size={{ xs: 6, sm: 4, md: 3, lg: 3 }} style={{ padding: "1%" }}>
+                  <PokemonCard props={pokemon} />
+                </Grid>
+              ) : null
+            )}
+          </Grid>
+        </div> */}
+
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
             gap: "10px",
-            margin: "10px",
-            marginBottom: "20px",
+            marginTop: "20px",
+            marginBottom: "40px",
           }}
         >
           <Button
@@ -175,41 +217,7 @@ const App = () => {
           </Button>
         </div>
       </div>
-
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {pokemonDetails.map((pokemon, index) =>
-          pokemon ? (
-            <Grid key={index} size={{ xs: 6, sm: 4, md: 3, lg: 3 }}>
-              <PokemonCard props={pokemon} />
-            </Grid>
-          ) : null
-        )}
-      </Grid>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          marginTop: "20px",
-          marginBottom: "40px",
-        }}
-      >
-        <Button
-          variant="contained"
-          onClick={downOffset}
-          sx={{ backgroundColor: "#f50057" }}
-        >
-          down
-        </Button>
-        <Button variant="contained" onClick={upOffset}>
-          up
-        </Button>
-      </div>
-    </div>
+    </div >
   );
 };
 

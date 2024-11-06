@@ -27,7 +27,7 @@ export const PokemonCard = ({ props }) => {
         <CardMedia
           component="img"
           // height="295"
-          height="200"
+          height="200px"
           image={props.sprites.front_default}
           alt="image"
         />
