@@ -1,21 +1,42 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
-export const Header = () => {
+import { auth } from "../firebase.js";
+import { signOut } from "firebase/auth";
+
+export const Header = ({ isAuth, setIsAuth }) => {
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        setIsAuth(false);
+        console.log("Sign-out successful");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ width: "100%" }}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            PokemonAPI
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="static" sx={{ width: "100%" }}>
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          PokemonAPI
+        </Typography>
+        {isAuth ? (
+          <Button
+            color="inherit"
+            sx={{ textTransform: "none" }}
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+        ) : (
+          <></>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };

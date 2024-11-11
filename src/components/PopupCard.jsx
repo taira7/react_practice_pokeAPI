@@ -9,13 +9,36 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import Fab from "@mui/material/Fab";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { pink } from "@mui/material/colors";
+
+import { auth, db } from "../firebase";
+import {
+  doc,
+  setDoc,
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const PopupCard = ({ details, open, handleClose }) => {
+export const PopupCard = ({
+  details,
+  open,
+  handleClose,
+  favorite,
+  setFavorite,
+}) => {
   const [pokemonImage, setPokemonImage] = useState(true);
+
+  //documentの自動生成id 削除に使用
+  const [docAutoId, setDocAutoId] = useState("");
 
   const handleImageChange = () => {
     if (pokemonImage == true) {
@@ -25,11 +48,92 @@ export const PopupCard = ({ details, open, handleClose }) => {
     }
   };
 
-  //タイプ　　配列
-  let pokemonTypes = details.types;
+  //タイプ 配列
+  const pokemonTypes = details.types;
 
-  let weight = (parseInt(details.weight) / 10).toFixed(1);
-  let height = (parseInt(details.height) / 10).toFixed(1);
+  const weight = (parseInt(details.weight) / 10).toFixed(1);
+  const height = (parseInt(details.height) / 10).toFixed(1);
+
+  const image_front = `${details.sprites.front_default}`;
+  const image_back = `${details.sprites.back_default}`;
+
+  const handleFavIconClick = () => {
+    if (!favorite) {
+      setFavorite(true);
+      saveFav();
+    } else {
+      setFavorite(false);
+      removeFav(docAutoId);
+    }
+  };
+
+  const getFavData = async () => {
+    const uid = auth.currentUser.uid;
+
+    const userDocRef = doc(db, "user", uid);
+    const favoriteCollectionRef = collection(userDocRef, "favorite");
+
+    const getUserDocRef = await getDoc(userDocRef);
+    if (getUserDocRef.exists) {
+      const querySnapshot = await getDocs(favoriteCollectionRef);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        const data = doc.data();
+        // console.log(data);
+        if (details.id == data.id) {
+          setFavorite(true);
+
+          // console.log("doc.id", doc.id);
+
+          //documentの自動生成id
+          setDocAutoId(doc.id);
+        }
+      });
+    }
+  };
+
+  const saveFav = async () => {
+    //ドキュメントの追加のみ 上書きされるので サブコレクションを使用する
+
+    const uid = auth.currentUser.uid;
+
+    const data = {
+      name: details.name,
+      id: details.id,
+      weight: weight,
+      height: height,
+      types: pokemonTypes,
+      image_front: image_front,
+      image_back: image_back,
+    };
+
+    //documentのパス
+    const userDocRef = doc(db, "user", uid); //uidがドキュメントのid
+    //SubCollectionのパス
+    const favoriteCollectionRef = collection(userDocRef, "favorite");
+
+    //userCollection， uidDocument, favoriteSubCollectionがなければ自動生成される
+    //あればSubCollectionにdocumentを追加
+
+    await addDoc(favoriteCollectionRef, data); //自動id
+    getFavData();
+  };
+
+  const removeFav = async (autoId) => {
+    const uid = auth.currentUser.uid;
+
+    const userDocRef = doc(db, "user", uid);
+    const favoriteCollectionRef = collection(userDocRef, "favorite");
+
+    const favDocRef = doc(favoriteCollectionRef, autoId);
+    await deleteDoc(favDocRef);
+
+    getFavData();
+  };
+
+  useEffect(() => {
+    getFavData();
+  }, []);
 
   return (
     <Dialog
@@ -40,6 +144,8 @@ export const PopupCard = ({ details, open, handleClose }) => {
       PaperProps={{
         sx: { width: "60%", height: "90%", margin: "auto" }, //中央に配置
       }}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
     >
       <DialogContent
         sx={{
@@ -50,10 +156,33 @@ export const PopupCard = ({ details, open, handleClose }) => {
       >
         {/* 画像　表裏　切替 */}
         {pokemonImage ? (
-          <img src={details.sprites.front_default} width="80%" height="65%" />
+          <img src={image_front} width="80%" height="63%" />
         ) : (
-          <img src={details.sprites.back_default} width="80%" height="65%" />
+          <img src={image_back} width="80%" height="63%" />
         )}
+
+        {/* お気に入りアイコン */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "90%",
+            marginRight: "10px",
+            cursor: "pointer",
+          }}
+        >
+          {favorite ? (
+            <FavoriteIcon
+              sx={{ fontSize: 30, color: pink[500] }}
+              onClick={handleFavIconClick}
+            />
+          ) : (
+            <FavoriteBorderIcon
+              sx={{ fontSize: 30, color: pink[500] }}
+              onClick={handleFavIconClick}
+            />
+          )}
+        </div>
 
         {/* ポケモンの名前 */}
         <DialogTitle>{details.name}</DialogTitle>
@@ -155,7 +284,7 @@ export const PopupCard = ({ details, open, handleClose }) => {
         </Fab>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>閉じる</Button>
+        <Button onClick={handleClose}>close</Button>
       </DialogActions>
     </Dialog>
   );

@@ -1,17 +1,23 @@
-import * as React from "react";
+import { useState } from "react";
+
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { pink } from "@mui/material/colors";
 
 import { PopupCard } from "./PopupCard";
 
-export const PokemonCard = ({ props }) => {
-  let pokemonTypes = props.types;
-  let details = props;
+export const PokemonCard = ({ pokemon }) => {
+  let pokemonTypes = pokemon.types;
+  let details = pokemon;
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+
+  const [favorite, setFavorite] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,12 +34,28 @@ export const PokemonCard = ({ props }) => {
           component="img"
           // height="295"
           height="200px"
-          image={props.sprites.front_default}
+          image={pokemon.sprites.front_default}
           alt="image"
         />
         <CardContent>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              width: "100%",
+              marginRight: "100px",
+              cursor: "pointer",
+            }}
+          >
+            {favorite ? (
+              <FavoriteIcon sx={{ fontSize: 30, color: pink[500] }} />
+            ) : (
+              <FavoriteBorderIcon sx={{ fontSize: 30, color: pink[500] }} />
+            )}
+          </div>
+
           <Typography gutterBottom variant="h5" component="div">
-            {props.name}
+            {pokemon.name}
           </Typography>
           {/* 全角空白は空欄表示用 */}
           {pokemonTypes.map((data, i) => {
@@ -119,7 +141,13 @@ export const PokemonCard = ({ props }) => {
           })}
         </CardContent>
       </CardActionArea>
-      <PopupCard open={open} handleClose={handleClose} details={details} />
+      <PopupCard
+        open={open}
+        handleClose={handleClose}
+        details={details}
+        favorite={favorite}
+        setFavorite={setFavorite}
+      />
     </Card>
   );
 };
