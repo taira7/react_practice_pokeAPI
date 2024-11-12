@@ -5,8 +5,11 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 
-const Home = ({ isAuth }) => {
+import { auth } from "../firebase";
+
+const Home = () => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [offset, setOffset] = useState(0);
   const [inputValue, setInputValue] = useState("");
@@ -14,11 +17,12 @@ const Home = ({ isAuth }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    //レンダリング中に遷移するのは非推奨らしいので， useEffect使用
-    if (!isAuth) {
-      navigate("/SignIn");
-    }
-  }, [isAuth]);
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/SignIn");
+      }
+    });
+  }, []);
 
   //   console.log("currentUser", auth.currentUser);
 

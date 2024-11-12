@@ -69,6 +69,7 @@ export const PopupCard = ({
 
   const getFavData = async () => {
     const uid = auth.currentUser.uid;
+    console.log(auth.currentUser);
 
     const userDocRef = doc(db, "user", uid);
     const favoriteCollectionRef = collection(userDocRef, "favorite");
@@ -82,9 +83,7 @@ export const PopupCard = ({
         // console.log(data);
         if (details.id == data.id) {
           setFavorite(true);
-
           // console.log("doc.id", doc.id);
-
           //documentの自動生成id
           setDocAutoId(doc.id);
         }

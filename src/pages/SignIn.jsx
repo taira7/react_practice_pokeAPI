@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
 
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
+import Alert from "@mui/material/Alert";
 
 import { Link, useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase.js";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 
 const SignIn = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -24,23 +30,24 @@ const SignIn = ({ setIsAuth }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        console.log(userCredential);
-
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        return signInWithEmailAndPassword(auth, email, password);
+      })
+      .then(() => {
         setIsAuth(true);
         navigate("/");
       })
       .catch((error) => {
         console.log(error);
+        setErrorMessage("Error message: Incorrect email address or password");
       });
   };
 
   return (
     <div
       style={{
-        minHeight: "83vh",
+        minHeight: "87vh",
         minWidth: "100vw",
         backgroundColor: "#ffffff",
       }}
@@ -62,6 +69,13 @@ const SignIn = ({ setIsAuth }) => {
         <Typography component="h1" variant="h5">
           Sign In
         </Typography>
+        {errorMessage ? (
+          <Alert severity="error" sx={{ width: "38%" }}>
+            {errorMessage}
+          </Alert>
+        ) : (
+          <></>
+        )}
         <Box
           component="form"
           sx={{ display: "flex", flexDirection: "column", width: "40%" }}

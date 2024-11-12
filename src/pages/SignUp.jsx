@@ -10,6 +10,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 const SignUp = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -35,13 +36,14 @@ const SignUp = ({ setIsAuth }) => {
       })
       .catch((error) => {
         console.log(error);
+        setErrorMessage(`error: ${error}`);
       });
   };
 
   return (
     <div
       style={{
-        minHeight: "83vh",
+        minHeight: "87vh",
         minWidth: "100vw",
         backgroundColor: "#ffffff",
       }}
@@ -63,6 +65,9 @@ const SignUp = ({ setIsAuth }) => {
       >
         <Typography component="h1" variant="h5">
           Sign Up
+        </Typography>
+        <Typography variant="h5" sx={{ color: "red" }}>
+          {errorMessage}
         </Typography>
         <Box
           component="form"
