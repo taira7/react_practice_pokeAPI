@@ -35,6 +35,7 @@ const SignIn = ({ setIsAuth }) => {
         return signInWithEmailAndPassword(auth, email, password);
       })
       .then(() => {
+        console.log(auth.currentUser);
         setIsAuth(true);
         navigate("/");
       })

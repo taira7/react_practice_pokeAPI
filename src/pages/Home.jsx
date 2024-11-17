@@ -3,13 +3,14 @@ import { PokemonCard } from "../components/PokemonCard";
 
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "../firebase";
 
-const Home = () => {
+const Home = ({ setIsMyPage }) => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [offset, setOffset] = useState(0);
   const [inputValue, setInputValue] = useState("");
@@ -26,26 +27,8 @@ const Home = () => {
 
   //   console.log("currentUser", auth.currentUser);
 
-  //今後リロードしてもサインイン状態を保持したい
-
   const apiLimit = 24; //カード数 2,3,4の公倍数がいい？
   let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
-
-  const fetchApi = async () => {
-    try {
-      const response = await fetch(apiURL);
-      if (!response.ok) {
-        throw new Error(`レスポンスステータス: ${response.status}`);
-      }
-
-      const data = await response.json();
-      loadDetail(data.results);
-
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getDetail = async (url) => {
     try {
@@ -68,6 +51,22 @@ const Home = () => {
       })
     );
     setPokemonDetails(pokemonRecord);
+  };
+
+  const fetchApi = async () => {
+    try {
+      const response = await fetch(apiURL);
+      if (!response.ok) {
+        throw new Error(`レスポンスステータス: ${response.status}`);
+      }
+
+      const data = await response.json();
+      loadDetail(data.results);
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const upOffset = () => {
@@ -97,6 +96,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchApi();
+    setIsMyPage(false);
   }, []);
 
   //   useEffect(() => {
@@ -136,7 +136,7 @@ const Home = () => {
           >
             <TextField
               id="outlined-number"
-              label="page number (1〜55)"
+              label="ページ番号を入力 (1〜55)"
               type="number"
               value={inputValue}
               onChange={handleInputChange}
@@ -147,9 +147,9 @@ const Home = () => {
             <Button
               variant="contained"
               type="submit"
-              sx={{ width: "30px", height: "55px" }}
+              sx={{ width: "30px", height: "53px" }}
             >
-              Go
+              <ArrowForwardIosIcon fontSize="small" />
             </Button>
           </form>
           <div
@@ -165,10 +165,10 @@ const Home = () => {
               onClick={downOffset}
               sx={{ backgroundColor: "#f50057" }}
             >
-              back
+              前へ
             </Button>
             <Button variant="contained" onClick={upOffset}>
-              next
+              次へ
             </Button>
           </div>
         </div>
@@ -213,10 +213,10 @@ const Home = () => {
             onClick={downOffset}
             sx={{ backgroundColor: "#f50057" }}
           >
-            back
+            前へ
           </Button>
           <Button variant="contained" onClick={upOffset}>
-            next
+            次へ
           </Button>
         </div>
       </div>

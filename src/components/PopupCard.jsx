@@ -69,7 +69,7 @@ export const PopupCard = ({
 
   const getFavData = async () => {
     const uid = auth.currentUser.uid;
-    console.log(auth.currentUser);
+    // console.log(auth.currentUser);
 
     const userDocRef = doc(db, "user", uid);
     const favoriteCollectionRef = collection(userDocRef, "favorite");
@@ -97,13 +97,7 @@ export const PopupCard = ({
     const uid = auth.currentUser.uid;
 
     const data = {
-      name: details.name,
       id: details.id,
-      weight: weight,
-      height: height,
-      types: pokemonTypes,
-      image_front: image_front,
-      image_back: image_back,
     };
 
     //documentのパス

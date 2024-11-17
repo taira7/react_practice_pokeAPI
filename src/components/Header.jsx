@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -8,7 +8,7 @@ import { auth } from "../firebase.js";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-export const Header = ({ isAuth, setIsAuth }) => {
+export const Header = ({ isAuth, setIsAuth, isMyPage }) => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
@@ -45,29 +45,66 @@ export const Header = ({ isAuth, setIsAuth }) => {
         </Typography>
         {isAuth ? (
           <div>
+            {isMyPage ? (
+              <Button
+                color="inherit"
+                sx={{
+                  textTransform: "none",
+                  marginRight: "20px",
+                  border: "1px solid white",
+                  "&:hover": {
+                    border: "1px solid #a9a9a9",
+                    backgroundColor: "#87cefa",
+                  },
+                }}
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
+                ホーム
+              </Button>
+            ) : (
+              <Button
+                color="inherit"
+                sx={{
+                  textTransform: "none",
+                  marginRight: "20px",
+                  border: "1px solid white",
+                  "&:hover": {
+                    border: "1px solid #a9a9a9",
+                    backgroundColor: "#87cefa",
+                  },
+                }}
+                onClick={() => {
+                  navigate("/MyPage");
+                }}
+              >
+                マイページ
+              </Button>
+            )}
             <Button
               color="inherit"
               sx={{
                 textTransform: "none",
-                marginRight: "20px",
                 border: "1px solid white",
+                marginRight: "20px",
                 "&:hover": {
                   border: "1px solid #a9a9a9",
                   backgroundColor: "#87cefa",
                 },
               }}
               onClick={() => {
-                navigate("/MyPage");
+                navigate("/MyFavorite");
               }}
             >
-              MyPage
+              お気に入り
             </Button>
-
             <Button
               color="inherit"
               sx={{
                 textTransform: "none",
                 border: "1px solid white",
+                marginRight: "20px",
                 "&:hover": {
                   border: "1px solid #a9a9a9",
                   backgroundColor: "#87cefa",
@@ -75,7 +112,7 @@ export const Header = ({ isAuth, setIsAuth }) => {
               }}
               onClick={handleSignOut}
             >
-              Sign Out
+              サインアウト
             </Button>
           </div>
         ) : (

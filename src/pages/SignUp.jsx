@@ -4,8 +4,17 @@ import { Box, TextField, Button, Typography, Container } from "@mui/material";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { auth } from "../firebase.js";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase";
+import {
+  doc,
+  setDoc,
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
 
 const SignUp = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
@@ -22,17 +31,29 @@ const SignUp = ({ setIsAuth }) => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     //デフォルト動作の無効　送信時のリロードを止める
     e.preventDefault();
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed up
-        console.log(userCredential);
+        // console.log(userCredential);
 
         setIsAuth(true);
         navigate("/");
+      })
+      .then(() => {
+        const user = auth.currentUser;
+        console.log(user);
+
+        const data = {
+          id: user.uid,
+          email: user.email,
+        };
+
+        const userDocRef = doc(db, "user", user.uid);
+        setDoc(userDocRef, data);
       })
       .catch((error) => {
         console.log(error);
