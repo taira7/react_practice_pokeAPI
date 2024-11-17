@@ -78,10 +78,9 @@ export const PopupCard = ({
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
         const data = doc.data();
         // console.log(data);
-        if (details.id == data.id) {
+        if (data.id === details.id) {
           setFavorite(true);
           // console.log("doc.id", doc.id);
           //documentの自動生成id
