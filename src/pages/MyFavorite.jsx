@@ -22,69 +22,56 @@ const MyFavorite = ({ setIsMyPage }) => {
   const user = auth.currentUser;
   const uid = user.uid;
 
-  const apiLimit = 2000;
-  const offset = 0;
-  let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
-
   const [favItems, setFavItems] = useState([]);
 
-  const getDetail = async (url) => {
+  const getFavoriteId = async () => {
     try {
-      const response = await fetch(url.url);
-      if (!response.ok) {
-        throw new Error(`レスポンスステータス: ${response.status}`);
-      }
+      const favIds = [];
+      const querySnapshot = await getDocs(
+        collection(db, "user", uid, "favorite")
+      );
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        //   console.log("id:", data.id);
+        favIds.push(data.id);
+      });
+
+      return favIds;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchApi = async (id) => {
+    try {
+      const apiURL = `https://pokeapi.co/api/v2/pokemon/${id}/`;
+      const response = await fetch(apiURL);
       const data = await response.json();
       return data;
     } catch (error) {
       console.log(error);
-      return null;
     }
   };
 
-  const loadDetail = async (pokeData) => {
-    const pokemonRecord = await Promise.all(
-      pokeData.map((data) => {
-        return getDetail(data);
-      })
-    );
-
-    const Item = [];
-    const querySnapshot = await getDocs(
-      collection(db, "user", uid, "favorite")
-    );
-
-    pokemonRecord.map((data) => {
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
-        if (data && docData) {
-          if (data.id == docData.id) {
-            Item.push(data);
-          }
-        }
-      });
-    });
-    setFavItems(Item);
-  };
-
-  const fetchApi = async () => {
+  const favoriteList = async () => {
     try {
-      const response = await fetch(apiURL);
-      if (!response.ok) {
-        throw new Error(`レスポンスステータス: ${response.status}`);
-      }
-
-      const data = await response.json();
-      loadDetail(data.results);
-
-      return data;
+      const ID = await getFavoriteId();
+      const sortedID = ID.sort((a, b) => a - b);
+      console.log("sort", sortedID);
+      const Items = await Promise.all(
+        sortedID.map((id) => {
+          return fetchApi(id);
+        })
+      );
+      //   console.log(Items);
+      setFavItems(Items);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchApi();
+    favoriteList();
     setIsMyPage(false);
   }, []);
 

@@ -36,7 +36,6 @@ export const PopupCard = ({
 }) => {
   const [pokemonImage, setPokemonImage] = useState(true);
 
-
   //documentの自動生成id 削除に使用
   const [docAutoId, setDocAutoId] = useState("");
 
@@ -75,13 +74,13 @@ export const PopupCard = ({
     const favoriteCollectionRef = collection(userDocRef, "favorite");
 
     const getUserDocRef = await getDoc(userDocRef);
-    if (getUserDocRef.exists) {
+    if (!getUserDocRef.empty) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
         let data = doc.data();
         // console.log(data);
         if (data.id === details.id) {
-          console.log("data.id:", data.id, "===", "details.id:", details.id)
+          console.log("data.id:", data.id, "===", "details.id:", details.id);
           setFavorite(true);
 
           //documentの自動生成id

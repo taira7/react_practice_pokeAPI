@@ -12,8 +12,6 @@ export const Header = ({ isAuth, setIsAuth, isMyPage }) => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    navigate("/SignIn");
-
     signOut(auth)
       .then(() => {
         // Sign-out successful.
@@ -23,6 +21,7 @@ export const Header = ({ isAuth, setIsAuth, isMyPage }) => {
       .catch((error) => {
         console.log(error);
       });
+    navigate("/SignIn");
   };
 
   return (

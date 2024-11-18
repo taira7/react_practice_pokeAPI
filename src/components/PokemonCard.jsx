@@ -11,7 +11,7 @@ import { pink } from "@mui/material/colors";
 
 import { PopupCard } from "./PopupCard";
 
-export const PokemonCard = ({ pokemon, offset }) => {
+export const PokemonCard = ({ pokemon }) => {
   let pokemonTypes = pokemon.types;
   let details = pokemon;
 
@@ -57,7 +57,9 @@ export const PokemonCard = ({ pokemon, offset }) => {
           <Typography gutterBottom variant="h5" component="div">
             {pokemon.name}
           </Typography>
-          <Typography gutterBottom variant="h5" component="div">{pokemon.id}</Typography>
+          {/* <Typography gutterBottom variant="h5" component="div">
+            {pokemon.id}
+          </Typography> */}
           {/* 全角空白は空欄表示用 */}
           {pokemonTypes.map((data, i) => {
             const typeColors = {

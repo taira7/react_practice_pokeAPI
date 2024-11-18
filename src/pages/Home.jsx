@@ -196,7 +196,7 @@ const Home = ({ setIsMyPage }) => {
                 }}
               >
                 {/* key属性割り振りで再レンダリングされる */}
-                <PokemonCard key={pokemon.id} pokemon={pokemon} offset={offset} />
+                <PokemonCard key={pokemon.id} pokemon={pokemon} />
               </div>
             ) : null
           )}

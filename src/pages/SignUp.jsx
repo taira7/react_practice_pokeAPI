@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
+import Alert from "@mui/material/Alert";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -87,9 +88,16 @@ const SignUp = ({ setIsAuth }) => {
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
-        <Typography variant="h5" sx={{ color: "red" }}>
+        {/* <Typography variant="h5" sx={{ color: "red" }}>
           {errorMessage}
-        </Typography>
+        </Typography> */}
+        {errorMessage ? (
+          <Alert severity="error" sx={{ width: "38%" }}>
+            {errorMessage}
+          </Alert>
+        ) : (
+          <></>
+        )}
         <Box
           component="form"
           sx={{ display: "flex", flexDirection: "column", width: "40%" }}
