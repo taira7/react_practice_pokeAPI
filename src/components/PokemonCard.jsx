@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -11,7 +11,7 @@ import { pink } from "@mui/material/colors";
 
 import { PopupCard } from "./PopupCard";
 
-export const PokemonCard = ({ pokemon }) => {
+export const PokemonCard = ({ pokemon, offset }) => {
   let pokemonTypes = pokemon.types;
   let details = pokemon;
 
@@ -57,52 +57,31 @@ export const PokemonCard = ({ pokemon }) => {
           <Typography gutterBottom variant="h5" component="div">
             {pokemon.name}
           </Typography>
+          <Typography gutterBottom variant="h5" component="div">{pokemon.id}</Typography>
           {/* 全角空白は空欄表示用 */}
           {pokemonTypes.map((data, i) => {
-            let typeColor = "";
-
-            if (data.type.name == "normal") {
-              typeColor = "#C1C2C1";
-            } else if (data.type.name == "fighting") {
-              typeColor = "#D67873";
-            } else if (data.type.name == "flying") {
-              typeColor = "#C6B7F5";
-            } else if (data.type.name == "poison") {
-              typeColor = "#C183C1";
-            } else if (data.type.name == "ground") {
-              typeColor = "#E0C068";
-            } else if (data.type.name == "rock") {
-              typeColor = "#D1C17D";
-            } else if (data.type.name == "bug") {
-              typeColor = "#A8B820";
-            } else if (data.type.name == "ghost") {
-              typeColor = "#A292BC";
-            } else if (data.type.name == "steel") {
-              typeColor = "#B8B8D0";
-            } else if (data.type.name == "fire") {
-              typeColor = "#F08030";
-            } else if (data.type.name == "water") {
-              typeColor = "#6890F0";
-            } else if (data.type.name == "grass") {
-              typeColor = "#A7DB8D";
-            } else if (data.type.name == "electric") {
-              typeColor = "#F8D030";
-            } else if (data.type.name == "psychic") {
-              typeColor = "#FA92B2";
-            } else if (data.type.name == "ice") {
-              typeColor = "#BCE6E6";
-            } else if (data.type.name == "dragon") {
-              typeColor = "#A27DFA";
-            } else if (data.type.name == "dark") {
-              typeColor = "#A29288";
-            } else if (data.type.name == "fairy") {
-              typeColor = "#F5A2F5";
-            } else if (data.type.name == "stellar") {
-              typeColor = "#7cc7b2";
-            } else if (data.type.name == "unknown") {
-              //うとうと色
-              typeColor = "#FFDC52";
-            }
+            const typeColors = {
+              normal: "#C1C2C1",
+              fighting: "#D67873",
+              flying: "#C6B7F5",
+              poison: "#C183C1",
+              ground: "#E0C068",
+              rock: "#D1C17D",
+              bug: "#A8B820",
+              ghost: "#A292BC",
+              steel: "#B8B8D0",
+              fire: "#F08030",
+              water: "#6890F0",
+              grass: "#A7DB8D",
+              electric: "#F8D030",
+              psychic: "#FA92B2",
+              ice: "#BCE6E6",
+              dragon: "#A27DFA",
+              dark: "#A29288",
+              fairy: "#F5A2F5",
+              stellar: "#7cc7b2",
+              unknown: "#FFDC52",
+            };
 
             if (pokemonTypes.length === 2) {
               return (
@@ -110,7 +89,7 @@ export const PokemonCard = ({ pokemon }) => {
                   Type {i + 1}:
                   <span
                     style={{
-                      backgroundColor: typeColor,
+                      backgroundColor: typeColors[data.type.name],
                       padding: "4px",
                       borderRadius: "4px",
                     }}
@@ -126,7 +105,7 @@ export const PokemonCard = ({ pokemon }) => {
                     Type {i + 1}:
                     <span
                       style={{
-                        backgroundColor: typeColor,
+                        backgroundColor: typeColors[data.type.name],
                         padding: "4px",
                         borderRadius: "4px",
                       }}

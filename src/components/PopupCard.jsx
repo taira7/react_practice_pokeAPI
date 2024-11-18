@@ -16,7 +16,6 @@ import { pink } from "@mui/material/colors";
 import { auth, db } from "../firebase";
 import {
   doc,
-  setDoc,
   addDoc,
   collection,
   deleteDoc,
@@ -36,6 +35,7 @@ export const PopupCard = ({
   setFavorite,
 }) => {
   const [pokemonImage, setPokemonImage] = useState(true);
+
 
   //documentの自動生成id 削除に使用
   const [docAutoId, setDocAutoId] = useState("");
@@ -78,11 +78,12 @@ export const PopupCard = ({
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
+        let data = doc.data();
         // console.log(data);
         if (data.id === details.id) {
+          console.log("data.id:", data.id, "===", "details.id:", details.id)
           setFavorite(true);
-          // console.log("doc.id", doc.id);
+
           //documentの自動生成id
           setDocAutoId(doc.id);
         }

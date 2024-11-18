@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "../firebase";
+import { Typography } from "@mui/material";
 
 const Home = ({ setIsMyPage }) => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
@@ -152,6 +153,7 @@ const Home = ({ setIsMyPage }) => {
               <ArrowForwardIosIcon fontSize="small" />
             </Button>
           </form>
+          <Typography>p.{offset / apiLimit + 1}</Typography>
           <div
             style={{
               display: "flex",
@@ -193,7 +195,8 @@ const Home = ({ setIsMyPage }) => {
                   padding: "20px",
                 }}
               >
-                <PokemonCard pokemon={pokemon} />
+                {/* key属性割り振りで再レンダリングされる */}
+                <PokemonCard key={pokemon.id} pokemon={pokemon} offset={offset} />
               </div>
             ) : null
           )}

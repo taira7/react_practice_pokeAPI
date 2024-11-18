@@ -73,8 +73,6 @@ const MyPage = ({ setIsMyPage }) => {
     //documentのIDを取得
     removeData();
 
-    navigate("/SignUp");
-
     deleteUser(user)
       .then(() => {
         console.log("User delete successful");
