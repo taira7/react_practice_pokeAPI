@@ -161,6 +161,7 @@ const MyPage = ({ setIsMyPage }) => {
         プロフィール
       </Typography>
       <Paper
+        elevation={3} // Paperの立体感を追加
         sx={{
           width: "80%", // 横幅を画面の80%に設定
           margin: "auto",
@@ -170,6 +171,7 @@ const MyPage = ({ setIsMyPage }) => {
           alignItems: "center",
           boxShadow: 3,
           marginBottom: "30px",
+          borderRadius: "8px",
         }}
       >
         <Stack
@@ -205,9 +207,11 @@ const MyPage = ({ setIsMyPage }) => {
           )}
 
           <Button
+            variant="outlined"
             sx={{
               textTransform: "none",
               border: "1px solid blue",
+              fontSize: "16px",
               "&:hover": {
                 border: "1px solid #a9a9a9",
                 backgroundColor: "#87cefa",
@@ -221,7 +225,14 @@ const MyPage = ({ setIsMyPage }) => {
           <Button
             variant="outlined"
             color="error"
-            sx={{ textTransform: "none" }}
+            sx={{
+              textTransform: "none",
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: "#ffcccc",
+                color: "#a00000",
+              },
+            }}
             onClick={handleUserDelete}
           >
             アカウント削除
@@ -381,29 +392,16 @@ const MyPage = ({ setIsMyPage }) => {
           >
             承認待ち
           </Typography>
-          <Paper
-            sx={{
-              width: "80%", // 横幅を画面の80%に設定
-              margin: "auto",
-              padding: 3,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              boxShadow: 3,
-              marginBottom: "30px",
-              gap: "15px",
-            }}
-          >
-            {pendingUsers.map((data, index) => {
-              return (
-                <PendingRequestCard
-                  key={index}
-                  pendingUser={data}
-                  myDetails={user}
-                />
-              );
-            })}
-          </Paper>
+
+          {pendingUsers.map((data, index) => {
+            return (
+              <PendingRequestCard
+                key={index}
+                pendingUser={data}
+                myDetails={user}
+              />
+            );
+          })}
         </div>
       )}
 

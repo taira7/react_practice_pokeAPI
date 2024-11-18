@@ -19,43 +19,78 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
 
   return (
     <div>
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        justifyContent="space-between" // 均等に配置
-        sx={{ width: "100%", padding: "10px", paddingRight: "30px" }} // Stackを親要素の幅いっぱいに広げる
+      <Paper
+        elevation={3} // Paperの立体感を追加
+        sx={{
+          width: "80%", // 横幅を画面の80%に設定
+          margin: "auto",
+          padding: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          boxShadow: 3,
+          marginBottom: "30px",
+          gap: "15px",
+          borderRadius: "8px",
+        }}
       >
-        <Avatar
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between" // 均等に配置
           sx={{
-            width: 100,
-            height: 100,
+            width: "100%",
+            padding: "10px",
           }}
         >
-          <AccountCircle sx={{ fontSize: 100 }} />
-        </Avatar>
+          <Avatar
+            sx={{
+              width: 100,
+              height: 100,
+            }}
+          >
+            <AccountCircle sx={{ fontSize: 100 }} />
+          </Avatar>
 
-        <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-          {pendingUser.email}
-        </Typography>
-        <Typography variant="h6" component="div" sx={{ flex: 1 }}>
-          ID:　{pendingUser.id}
-        </Typography>
+          <Typography variant="h5" component="div" sx={{ flex: 1 }}>
+            {pendingUser.email}
+          </Typography>
+          <Typography variant="h6" component="div" sx={{ flex: 1 }}>
+            ID:　{pendingUser.id}
+          </Typography>
 
-        <Button
-          sx={{
-            textTransform: "none",
-            border: "1px solid blue",
-            fontSize: "18px",
-            "&:hover": {
-              border: "1px solid #a9a9a9",
-              backgroundColor: "#87cefa",
-            },
-          }}
-        >
-          申請する
-        </Button>
-      </Stack>
+          <Button
+            variant="outlined"
+            sx={{
+              textTransform: "none",
+              border: "1px solid blue",
+              fontSize: "20px",
+              "&:hover": {
+                border: "1px solid #a9a9a9",
+                backgroundColor: "#87cefa",
+              },
+            }}
+          >
+            承認
+          </Button>
+
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{
+              textTransform: "none",
+              fontSize: "20px",
+              "&:hover": {
+                backgroundColor: "#ffcccc",
+                color: "#a00000",
+              },
+            }}
+          >
+            拒否
+          </Button>
+        </Stack>
+      </Paper>
     </div>
   );
 };

@@ -60,6 +60,7 @@ export const RequestCard = ({
       }}
     >
       <Paper
+        elevation={3} // Paperの立体感を追加
         sx={{
           width: "80%", // 横幅を画面の80%に設定
           margin: "auto",
@@ -70,6 +71,7 @@ export const RequestCard = ({
           boxShadow: 3,
           marginBottom: "30px",
           gap: "15px",
+          borderRadius: "8px",
         }}
       >
         <Stack
@@ -102,7 +104,7 @@ export const RequestCard = ({
               sx={{
                 textTransform: "none",
                 border: "1px solid blue",
-                fontSize: "18px",
+                fontSize: "20px",
                 "&:hover": {
                   border: "1px solid #a9a9a9",
                   backgroundColor: "#87cefa",
