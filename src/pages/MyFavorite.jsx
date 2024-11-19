@@ -8,6 +8,7 @@ import { PokemonCard } from "../components/PokemonCard";
 
 import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
+import Alert from "@mui/material/Alert";
 
 const MyFavorite = ({ setIsMyPage }) => {
   useEffect(() => {
@@ -26,17 +27,17 @@ const MyFavorite = ({ setIsMyPage }) => {
 
   const getFavoriteId = async () => {
     try {
-      const favIds = [];
+      const favId = [];
       const querySnapshot = await getDocs(
         collection(db, "user", uid, "favorite")
       );
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         //   console.log("id:", data.id);
-        favIds.push(data.id);
+        favId.push(data.id);
       });
 
-      return favIds;
+      return favId;
     } catch (error) {
       console.log(error);
     }
@@ -57,7 +58,7 @@ const MyFavorite = ({ setIsMyPage }) => {
     try {
       const ID = await getFavoriteId();
       const sortedID = ID.sort((a, b) => a - b);
-      console.log("sort", sortedID);
+      // console.log("sort", sortedID);
       const Items = await Promise.all(
         sortedID.map((id) => {
           return fetchApi(id);
@@ -152,7 +153,20 @@ const MyFavorite = ({ setIsMyPage }) => {
             );
           })
         ) : (
-          <></>
+          <Alert
+            severity="error"
+            sx={{
+              display: "flex", // 必要なスタイルを追加
+              width: "50%",
+              justifyContent: "center", // 横方向に中央揃え
+              alignItems: "center", // 垂直方向に中央揃え
+              margin: "auto",
+              marginBottom: "40px",
+              marginTop: "10px"
+            }}
+          >
+            お気に入りはありません
+          </Alert>
         )}
       </div>
     </div>

@@ -25,6 +25,8 @@ import {
 } from "firebase/firestore";
 import { RequestCard } from "../components/RequestCard.jsx";
 import { PendingRequestCard } from "../components/PendingRequestCard.jsx";
+import { FriendCard } from "../components/FriendCard.jsx";
+
 
 const MyPage = ({ setIsMyPage }) => {
   //フレンド申請関連
@@ -34,6 +36,9 @@ const MyPage = ({ setIsMyPage }) => {
 
   //フレンド承認待ち関連
   const [pendingUsers, setPendingUsers] = useState();
+
+  //フレンド一覧関連
+  const [friendData, setFriendData] = useState();
 
   const navigate = useNavigate();
 
@@ -51,7 +56,7 @@ const MyPage = ({ setIsMyPage }) => {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
-        console.log("Sign-out successful");
+        // console.log("Sign-out successful");
       })
       .catch((error) => {
         console.log(error);
@@ -81,7 +86,7 @@ const MyPage = ({ setIsMyPage }) => {
 
     deleteUser(user)
       .then(() => {
-        console.log("User delete successful");
+        // console.log("User delete successful");
       })
       .catch((error) => {
         console.log(error);
@@ -135,14 +140,23 @@ const MyPage = ({ setIsMyPage }) => {
     }
   };
 
+  const getFriendList = async () => {
+    const myId = user.uid;
+    const friendCollectionRef = collection(db, "user", myId, "friends")
+    const querySnapshot = await getDocs(friendCollectionRef)
+    if (!querySnapshot.empty) {
+      const friendDetails = querySnapshot.docs.map((doc) => {
+        return doc.data();
+      });
+      setFriendData(friendDetails);
+    }
+  }
+
   useEffect(() => {
     setIsMyPage(true);
     getPendingUser();
+    getFriendList();
   }, []);
-
-  useEffect(() => {
-    console.log(pendingUsers);
-  }, [pendingUsers]);
 
   return (
     <div
@@ -152,6 +166,8 @@ const MyPage = ({ setIsMyPage }) => {
         minWidth: "100vw",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "flex-start", // 上側に寄せる
+        gap: "18px",
       }}
     >
       <Typography
@@ -170,6 +186,7 @@ const MyPage = ({ setIsMyPage }) => {
           flexDirection: "column",
           alignItems: "center",
           boxShadow: 3,
+          marginTop: "0px",
           marginBottom: "30px",
           borderRadius: "8px",
         }}
@@ -247,142 +264,31 @@ const MyPage = ({ setIsMyPage }) => {
         フレンド
       </Typography>
 
-      <Paper
-        sx={{
-          width: "80%", // 横幅を画面の80%に設定
-          margin: "auto",
-          padding: 3,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          boxShadow: 3,
-          gap: "15px",
-          marginBottom: "30px",
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%", padding: "10px", border: "1px solid #a9a9a9" }} // Stackを親要素の幅いっぱいに広げる
-        >
-          <Avatar
+      {friendData ? (
+        <>
+          {
+            friendData.map((data, index) => {
+              return (<FriendCard key={index} friendDetails={data} myDetails={user} />)
+            })
+          }
+        </>
+      ) : (
+        <div>
+          <Alert
+            severity="error"
             sx={{
-              width: 100,
-              height: 100,
+              display: "flex",
+              width: "50%",
+              justifyContent: "center", // 横方向に中央揃え
+              alignItems: "center", // 垂直方向に中央揃え
+              margin: "auto",
+              marginBottom: "40px",
             }}
           >
-            <AccountCircle sx={{ fontSize: 100 }} />
-          </Avatar>
-
-          {user ? (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              {user.email}
-            </Typography>
-          ) : (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              No user
-            </Typography>
-          )}
-
-          <Button
-            sx={{
-              textTransform: "none",
-              border: "1px solid blue",
-              "&:hover": {
-                border: "1px solid #a9a9a9",
-                backgroundColor: "#87cefa",
-              },
-            }}
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </Button>
-        </Stack>
-
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%", padding: "10px", border: "1px solid #a9a9a9" }} // Stackを親要素の幅いっぱいに広げる
-        >
-          <Avatar
-            sx={{
-              width: 100,
-              height: 100,
-            }}
-          >
-            <AccountCircle sx={{ fontSize: 100 }} />
-          </Avatar>
-
-          {user ? (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              {user.email}
-            </Typography>
-          ) : (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              No user
-            </Typography>
-          )}
-
-          <Button
-            sx={{
-              textTransform: "none",
-              border: "1px solid blue",
-              "&:hover": {
-                border: "1px solid #a9a9a9",
-                backgroundColor: "#87cefa",
-              },
-            }}
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </Button>
-        </Stack>
-
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%", padding: "10px", border: "1px solid #a9a9a9" }} // Stackを親要素の幅いっぱいに広げる
-        >
-          <Avatar
-            sx={{
-              width: 100,
-              height: 100,
-            }}
-          >
-            <AccountCircle sx={{ fontSize: 100 }} />
-          </Avatar>
-
-          {user ? (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              {user.email}
-            </Typography>
-          ) : (
-            <Typography variant="h5" component="div" sx={{ flex: 1 }}>
-              No user
-            </Typography>
-          )}
-
-          <Button
-            sx={{
-              textTransform: "none",
-              border: "1px solid blue",
-              "&:hover": {
-                border: "1px solid #a9a9a9",
-                backgroundColor: "#87cefa",
-              },
-            }}
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </Button>
-        </Stack>
-      </Paper>
+            フレンドはいません
+          </Alert>
+        </div>
+      )}
 
       {pendingUsers && (
         <div>
@@ -416,7 +322,7 @@ const MyPage = ({ setIsMyPage }) => {
         style={{
           display: "flex",
           marginBottom: "40px",
-          width: "100%", // フォームの幅を画面の50%に設定
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
           gap: "20px",
@@ -460,6 +366,7 @@ const MyPage = ({ setIsMyPage }) => {
             alignItems: "center", // 垂直方向に中央揃え
             margin: "auto",
             marginBottom: "40px",
+            marginTop: "10px"
           }}
         >
           {errorMessage}

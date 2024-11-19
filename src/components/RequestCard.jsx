@@ -12,13 +12,13 @@ export const RequestCard = ({
   setRequestDetails,
 }) => {
   const [friend, setFriend] = useState(false);
-  console.log(myDetails);
+  // console.log(myDetails);
 
   const myId = myDetails.uid;
   const friendId = requestDetails.id;
 
-  console.log("myId", myId);
-  console.log("friendId", friendId);
+  // console.log("myId", myId);
+  // console.log("friendId", friendId);
 
   const friendCollectionCheck = async () => {
     const friendsCollectionRef = collection(db, "user", myId, "friends");
@@ -45,11 +45,16 @@ export const RequestCard = ({
       id: myId,
     });
     setRequestDetails(null);
+    window.location.reload();
   };
 
   useEffect(() => {
     friendCollectionCheck();
   }, []);
+
+  useEffect(() => {
+    friendCollectionCheck();
+  }, [myDetails, requestDetails]);
 
   return (
     <div

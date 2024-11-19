@@ -10,12 +10,48 @@ import {
 } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 
+import { db } from "../firebase";
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  deleteDoc,
+  setDoc,
+} from "firebase/firestore";
+
 export const PendingRequestCard = ({ pendingUser, myDetails }) => {
   const myId = myDetails.uid;
   const pendingUserId = pendingUser.id;
 
-  const handleApproveRequest = () => {};
-  const handleRejectRequest = () => {};
+  const handleRejectRequest = async () => {
+    //拒否
+    //自分のfriendRequestから相手の情報を削除
+    const myFriendRequestCollectionRef = collection(db, "user", myId, "friendRequest");
+    await deleteDoc(doc(myFriendRequestCollectionRef, pendingUserId))
+
+    window.location.reload();
+  };
+
+  const handleApproveRequest = async () => {
+    //承認
+
+    //自分のフレンドコレクションに追加
+    const myFriendsCollectionRef = collection(db, "user", myId, "friends")
+    await setDoc(doc(myFriendsCollectionRef, pendingUserId), {
+      email: pendingUser.email,
+      id: pendingUserId,
+    })
+
+    //相手のフレンドコレクションに追加
+    const pendingUserFriendsCollectionRef = collection(db, "user", pendingUserId, "friends")
+    await setDoc(doc(pendingUserFriendsCollectionRef, myId), {
+      email: myDetails.email,
+      id: myId,
+    })
+
+    handleRejectRequest();
+  };
 
   return (
     <div>
@@ -71,6 +107,7 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
                 backgroundColor: "#87cefa",
               },
             }}
+            onClick={handleApproveRequest}
           >
             承認
           </Button>
@@ -86,6 +123,7 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
                 color: "#a00000",
               },
             }}
+            onClick={handleRejectRequest}
           >
             拒否
           </Button>

@@ -60,7 +60,7 @@ const App = () => {
           element={<MyFavorite setIsMyPage={setIsMyPage} />}
         />
         <Route
-          path="/Favorite"
+          path="/Favorite/:MyId/:FriendId/"
           element={<FriendFavorite setIsMyPage={setIsMyPage} />}
         />
       </Routes>

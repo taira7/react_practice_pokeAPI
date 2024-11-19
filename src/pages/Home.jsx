@@ -106,7 +106,7 @@ const Home = ({ setIsMyPage }) => {
 
   useEffect(() => {
     fetchApi();
-    console.log("offset=", offset);
+    // console.log("offset=", offset);
   }, [offset]);
 
   return (
