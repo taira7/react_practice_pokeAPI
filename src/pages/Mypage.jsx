@@ -27,7 +27,6 @@ import { RequestCard } from "../components/RequestCard.jsx";
 import { PendingRequestCard } from "../components/PendingRequestCard.jsx";
 import { FriendCard } from "../components/FriendCard.jsx";
 
-
 const MyPage = ({ setIsMyPage }) => {
   //フレンド申請関連
   const [requestId, setRequestId] = useState("");
@@ -66,13 +65,45 @@ const MyPage = ({ setIsMyPage }) => {
   const removeDB = async () => {
     const uid = auth.currentUser.uid;
     const userDocRef = doc(db, "user", uid);
-    const favoriteCollectionRef = collection(userDocRef, "favorite");
 
     const getUserDocRef = await getDoc(userDocRef);
-    if (!getUserDocRef.empty) {
+
+    const favoriteCollectionRef = collection(userDocRef, "favorite");
+    if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
+      // console.log("favorite");
       querySnapshot.forEach((favDoc) => {
-        deleteDoc(doc(db, "user", uid, "favorite", favDoc.id));
+        deleteDoc(doc(favoriteCollectionRef, favDoc.id));
+      });
+    }
+
+    const requestCollectionRef = collection(userDocRef, "friendRequest");
+    if (getUserDocRef.exists) {
+      const querySnapshot = await getDocs(requestCollectionRef);
+      querySnapshot.forEach((reqDoc) => {
+        const friendId = reqDoc.id;
+        // console.log("frirequest");
+        deleteDoc(doc(db, "user", friendId, "friendRequest", uid));
+      });
+      querySnapshot.forEach((reqDoc) => {
+        const friendId = reqDoc.id;
+        // console.log("myrequest");
+        deleteDoc(doc(db, "user", uid, "friendRequest", friendId));
+      });
+    }
+
+    const friendsCollectionRef = collection(userDocRef, "friends");
+    if (getUserDocRef.exists) {
+      const querySnapshot = await getDocs(friendsCollectionRef);
+      querySnapshot.forEach((Doc) => {
+        const friendId = Doc.id;
+        // console.log("friend", friendId);
+        deleteDoc(doc(db, "user", friendId, "friends", uid));
+      });
+      querySnapshot.forEach((Doc) => {
+        const friendId = Doc.id;
+        // console.log("my", friendId);
+        deleteDoc(doc(db, "user", uid, "friends", friendId));
       });
     }
 
@@ -86,7 +117,7 @@ const MyPage = ({ setIsMyPage }) => {
 
     deleteUser(user)
       .then(() => {
-        // console.log("User delete successful");
+        console.log("User delete successful");
       })
       .catch((error) => {
         console.log(error);
@@ -142,15 +173,15 @@ const MyPage = ({ setIsMyPage }) => {
 
   const getFriendList = async () => {
     const myId = user.uid;
-    const friendCollectionRef = collection(db, "user", myId, "friends")
-    const querySnapshot = await getDocs(friendCollectionRef)
+    const friendCollectionRef = collection(db, "user", myId, "friends");
+    const querySnapshot = await getDocs(friendCollectionRef);
     if (!querySnapshot.empty) {
       const friendDetails = querySnapshot.docs.map((doc) => {
         return doc.data();
       });
       setFriendData(friendDetails);
     }
-  }
+  };
 
   useEffect(() => {
     setIsMyPage(true);
@@ -266,11 +297,11 @@ const MyPage = ({ setIsMyPage }) => {
 
       {friendData ? (
         <>
-          {
-            friendData.map((data, index) => {
-              return (<FriendCard key={index} friendDetails={data} myDetails={user} />)
-            })
-          }
+          {friendData.map((data, index) => {
+            return (
+              <FriendCard key={index} friendDetails={data} myDetails={user} />
+            );
+          })}
         </>
       ) : (
         <div>
@@ -366,7 +397,7 @@ const MyPage = ({ setIsMyPage }) => {
             alignItems: "center", // 垂直方向に中央揃え
             margin: "auto",
             marginBottom: "40px",
-            marginTop: "10px"
+            marginTop: "10px",
           }}
         >
           {errorMessage}

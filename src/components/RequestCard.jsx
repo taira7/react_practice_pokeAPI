@@ -34,15 +34,17 @@ export const RequestCard = ({
   };
 
   const handleClick = async () => {
-    const requestCollctionRef = collection(
-      db,
-      "user",
-      friendId,
-      "friendRequest"
-    );
-    await setDoc(doc(requestCollctionRef, myId), {
+    //受信者側
+    await setDoc(doc(db, "user", friendId, "friendRequest", myId), {
       email: myDetails.email,
       id: myId,
+      isReceive: true,
+    });
+    //送信者側
+    await setDoc(doc(db, "user", myId, "friendRequest", friendId), {
+      email: requestDetails.email,
+      id: friendId,
+      isReceive: false,
     });
     setRequestDetails(null);
     window.location.reload();

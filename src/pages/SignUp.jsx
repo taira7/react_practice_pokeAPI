@@ -46,7 +46,7 @@ const SignUp = ({ setIsAuth }) => {
       })
       .then(() => {
         const user = auth.currentUser;
-        console.log(user);
+        // console.log(user);
 
         const data = {
           id: user.uid,

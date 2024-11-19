@@ -9,6 +9,8 @@ import { AccountCircle } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 
 import { FriendPokemonCard } from "../components/FriendPokemonCard";
+import { onAuthStateChanged } from "firebase/auth";
+import PermissionError from "./PermissionError";
 
 const FriendFavorite = ({ setIsMyPage }) => {
   const { MyId } = useParams();
@@ -19,11 +21,13 @@ const FriendFavorite = ({ setIsMyPage }) => {
   const [friendFavId, setFriendFavId] = useState([]);
   const [friendFavItems, setFriendFavItems] = useState([]);
 
+  const currentUserId = auth.currentUser.uid;
+
   const getUserData = async () => {
     const profileDocRef = doc(db, "user", MyId);
     const profileData = await getDoc(profileDocRef);
-    setUserProfile(profileData);
-  }
+    setUserProfile(profileData.data());
+  };
 
   const getFriendData = async () => {
     const profileDocRef = doc(db, "user", FriendId);
@@ -32,32 +36,32 @@ const FriendFavorite = ({ setIsMyPage }) => {
 
     const favId = [];
     const favoriteCollectionRef = collection(profileDocRef, "favorite");
-    const querySnapshot = await getDocs(favoriteCollectionRef)
+    const querySnapshot = await getDocs(favoriteCollectionRef);
     // const favId = querySnapshot.docs.map((doc) => {
     //   return doc.data().id
     // })
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      favId.push(data.id)
-    })
-    console.log(favId)
+      favId.push(data.id);
+    });
+    // console.log(favId);
     setFriendFavId(favId);
-  }
+  };
 
   const fetchAPI = async (id) => {
     try {
-      const apiUrl = `https://pokeapi.co/api/v2/pokemon/${id}/`
+      const apiUrl = `https://pokeapi.co/api/v2/pokemon/${id}/`;
       const response = await fetch(apiUrl);
       const data = await response.json();
       return data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const friendFavoriteList = async () => {
     try {
       const sortedID = friendFavId.sort((a, b) => a - b);
-      console.log("sort", sortedID);
+      //   console.log("sort", sortedID);
       const Items = await Promise.all(
         sortedID.map((id) => {
           return fetchAPI(id);
@@ -68,32 +72,30 @@ const FriendFavorite = ({ setIsMyPage }) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    setIsMyPage(true);
+    setIsMyPage(false);
     getUserData();
     getFriendData();
-    // friendFavoriteList();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/SignIn");
+      }
+    });
   }, []);
 
   useEffect(() => {
-    console.log("profile", friendProfile)
-  }, [friendProfile])
-
-  // useEffect(() => {
-  //   console.log(frien)
-  // }, [friendFavId])
-
-
-  useEffect(() => {
-    console.log("FavId", friendFavId)
+    // console.log("FavId", friendFavId);
     friendFavoriteList();
-  }, [friendFavId])
+  }, [friendFavId]);
 
-  useEffect(() => {
-    console.log("FavItems", friendFavItems)
-  }, [friendFavItems])
+  if (userProfile) {
+    if (currentUserId !== MyId) {
+      return <PermissionError />;
+    }
+  }
 
   return (
     <div
@@ -103,7 +105,8 @@ const FriendFavorite = ({ setIsMyPage }) => {
         minWidth: "100vw",
         display: "flex",
         flexDirection: "column",
-      }}>
+      }}
+    >
       <Typography variant="h3" sx={{ marginTop: "25px", marginLeft: "80px" }}>
         {friendProfile && <span>{friendProfile.email}</span>} のお気に入り
       </Typography>
@@ -182,7 +185,7 @@ const FriendFavorite = ({ setIsMyPage }) => {
               alignItems: "center", // 垂直方向に中央揃え
               margin: "auto",
               marginBottom: "40px",
-              marginTop: "10px"
+              marginTop: "10px",
             }}
           >
             お気に入りはありません

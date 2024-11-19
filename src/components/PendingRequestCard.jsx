@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Paper,
@@ -24,11 +24,21 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
   const myId = myDetails.uid;
   const pendingUserId = pendingUser.id;
 
+  const [isReceive, setIsReceive] = useState();
+
+  const checkIsReceive = async () => {
+    const details = await getDoc(
+      doc(db, "user", myId, "friendRequest", pendingUserId)
+    );
+    const data = details.data();
+    setIsReceive(data.isReceive);
+  };
+
   const handleRejectRequest = async () => {
     //拒否
     //自分のfriendRequestから相手の情報を削除
-    const myFriendRequestCollectionRef = collection(db, "user", myId, "friendRequest");
-    await deleteDoc(doc(myFriendRequestCollectionRef, pendingUserId))
+    await deleteDoc(doc(db, "user", myId, "friendRequest", pendingUserId));
+    await deleteDoc(doc(db, "user", pendingUserId, "friendRequest", myId));
 
     window.location.reload();
   };
@@ -37,21 +47,30 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
     //承認
 
     //自分のフレンドコレクションに追加
-    const myFriendsCollectionRef = collection(db, "user", myId, "friends")
+    const myFriendsCollectionRef = collection(db, "user", myId, "friends");
     await setDoc(doc(myFriendsCollectionRef, pendingUserId), {
       email: pendingUser.email,
       id: pendingUserId,
-    })
+    });
 
     //相手のフレンドコレクションに追加
-    const pendingUserFriendsCollectionRef = collection(db, "user", pendingUserId, "friends")
+    const pendingUserFriendsCollectionRef = collection(
+      db,
+      "user",
+      pendingUserId,
+      "friends"
+    );
     await setDoc(doc(pendingUserFriendsCollectionRef, myId), {
       email: myDetails.email,
       id: myId,
-    })
+    });
 
     handleRejectRequest();
   };
+
+  useEffect(() => {
+    checkIsReceive();
+  }, []);
 
   return (
     <div>
@@ -96,37 +115,43 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
             ID:　{pendingUser.id}
           </Typography>
 
-          <Button
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              border: "1px solid blue",
-              fontSize: "20px",
-              "&:hover": {
-                border: "1px solid #a9a9a9",
-                backgroundColor: "#87cefa",
-              },
-            }}
-            onClick={handleApproveRequest}
-          >
-            承認
-          </Button>
+          {isReceive ? (
+            <>
+              <Button
+                variant="outlined"
+                sx={{
+                  textTransform: "none",
+                  border: "1px solid blue",
+                  fontSize: "20px",
+                  "&:hover": {
+                    border: "1px solid #a9a9a9",
+                    backgroundColor: "#87cefa",
+                  },
+                }}
+                onClick={handleApproveRequest}
+              >
+                承認
+              </Button>
 
-          <Button
-            variant="outlined"
-            color="error"
-            sx={{
-              textTransform: "none",
-              fontSize: "20px",
-              "&:hover": {
-                backgroundColor: "#ffcccc",
-                color: "#a00000",
-              },
-            }}
-            onClick={handleRejectRequest}
-          >
-            拒否
-          </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                sx={{
+                  textTransform: "none",
+                  fontSize: "20px",
+                  "&:hover": {
+                    backgroundColor: "#ffcccc",
+                    color: "#a00000",
+                  },
+                }}
+                onClick={handleRejectRequest}
+              >
+                拒否
+              </Button>
+            </>
+          ) : (
+            <Typography>申請中です</Typography>
+          )}
         </Stack>
       </Paper>
     </div>

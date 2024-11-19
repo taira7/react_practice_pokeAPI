@@ -13,6 +13,7 @@ import FriendFavorite from "./pages/FriendFavorite";
 
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -63,6 +64,7 @@ const App = () => {
           path="/Favorite/:MyId/:FriendId/"
           element={<FriendFavorite setIsMyPage={setIsMyPage} />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
