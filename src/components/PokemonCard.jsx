@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { PopupCard } from "./PopupCard";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -8,8 +10,6 @@ import CardActionArea from "@mui/material/CardActionArea";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { pink } from "@mui/material/colors";
-
-import { PopupCard } from "./PopupCard";
 
 export const PokemonCard = ({ pokemon }) => {
   let pokemonTypes = pokemon.types;
@@ -32,7 +32,6 @@ export const PokemonCard = ({ pokemon }) => {
       <CardActionArea onClick={handleClickOpen}>
         <CardMedia
           component="img"
-          // height="295"
           height="200px"
           image={pokemon.sprites.front_default}
           alt="image"
@@ -57,9 +56,6 @@ export const PokemonCard = ({ pokemon }) => {
           <Typography gutterBottom variant="h5" component="div">
             {pokemon.name}
           </Typography>
-          {/* <Typography gutterBottom variant="h5" component="div">
-            {pokemon.id}
-          </Typography> */}
           {/* 全角空白は空欄表示用 */}
           {pokemonTypes.map((data, i) => {
             const typeColors = {

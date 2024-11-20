@@ -1,24 +1,10 @@
-import React, { useEffect, useState } from "react";
-
-import {
-  Paper,
-  Typography,
-  Avatar,
-  Stack,
-  Button,
-  TextField,
-} from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
 import { db } from "../firebase";
-import {
-  doc,
-  collection,
-  getDocs,
-  getDoc,
-  deleteDoc,
-  setDoc,
-} from "firebase/firestore";
+import { doc, collection, getDoc, deleteDoc, setDoc } from "firebase/firestore";
+
+import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
+import { AccountCircle } from "@mui/icons-material";
 
 export const PendingRequestCard = ({ pendingUser, myDetails }) => {
   const myId = myDetails.uid;
@@ -75,9 +61,9 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
   return (
     <div>
       <Paper
-        elevation={3} // Paperの立体感を追加
+        elevation={3}
         sx={{
-          width: "80%", // 横幅を画面の80%に設定
+          width: "80%",
           margin: "auto",
           padding: 3,
           display: "flex",

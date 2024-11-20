@@ -2,6 +2,20 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { animateScroll as scroll } from "react-scroll";
 
+import { auth, db } from "../firebase.js";
+import { signOut, deleteUser, onAuthStateChanged } from "firebase/auth";
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  deleteDoc,
+} from "firebase/firestore";
+
+import { RequestCard } from "../components/RequestCard.jsx";
+import { PendingRequestCard } from "../components/PendingRequestCard.jsx";
+import { FriendCard } from "../components/FriendCard.jsx";
+
 import {
   Paper,
   Typography,
@@ -13,19 +27,6 @@ import {
 import { AccountCircle } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import Alert from "@mui/material/Alert";
-
-import { auth, db } from "../firebase.js";
-import { signOut, deleteUser, onAuthStateChanged } from "firebase/auth";
-import {
-  doc,
-  collection,
-  getDocs,
-  getDoc,
-  deleteDoc,
-} from "firebase/firestore";
-import { RequestCard } from "../components/RequestCard.jsx";
-import { PendingRequestCard } from "../components/PendingRequestCard.jsx";
-import { FriendCard } from "../components/FriendCard.jsx";
 
 const MyPage = ({ setIsMyPage }) => {
   //フレンド申請関連
@@ -55,7 +56,7 @@ const MyPage = ({ setIsMyPage }) => {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
-        // console.log("Sign-out successful");
+        console.log("Sign-out successful");
       })
       .catch((error) => {
         console.log(error);
@@ -68,41 +69,43 @@ const MyPage = ({ setIsMyPage }) => {
 
     const getUserDocRef = await getDoc(userDocRef);
 
+    //favoriteサブコレクションの削除
     const favoriteCollectionRef = collection(userDocRef, "favorite");
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
-      // console.log("favorite");
       querySnapshot.forEach((favDoc) => {
         deleteDoc(doc(favoriteCollectionRef, favDoc.id));
       });
     }
 
+    //friendRequestサブコレクションの削除
     const requestCollectionRef = collection(userDocRef, "friendRequest");
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(requestCollectionRef);
+      //受信側の削除
       querySnapshot.forEach((reqDoc) => {
         const friendId = reqDoc.id;
-        // console.log("frirequest");
         deleteDoc(doc(db, "user", friendId, "friendRequest", uid));
       });
+      //送信者側の削除
       querySnapshot.forEach((reqDoc) => {
         const friendId = reqDoc.id;
-        // console.log("myrequest");
         deleteDoc(doc(db, "user", uid, "friendRequest", friendId));
       });
     }
 
+    //ffriendsサブコレクションの削除
     const friendsCollectionRef = collection(userDocRef, "friends");
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(friendsCollectionRef);
-      querySnapshot.forEach((Doc) => {
-        const friendId = Doc.id;
-        // console.log("friend", friendId);
+      //相手のコレクションから削除
+      querySnapshot.forEach((doc) => {
+        const friendId = doc.id;
         deleteDoc(doc(db, "user", friendId, "friends", uid));
       });
-      querySnapshot.forEach((Doc) => {
-        const friendId = Doc.id;
-        // console.log("my", friendId);
+      //自分のコレクションを削除
+      querySnapshot.forEach((doc) => {
+        const friendId = doc.id;
         deleteDoc(doc(db, "user", uid, "friends", friendId));
       });
     }
@@ -111,8 +114,6 @@ const MyPage = ({ setIsMyPage }) => {
   };
 
   const handleUserDelete = () => {
-    //userのドキュメントを
-    //documentのIDを取得
     removeDB();
 
     deleteUser(user)
@@ -124,6 +125,7 @@ const MyPage = ({ setIsMyPage }) => {
       });
   };
 
+  //ID検索
   const handleRequestIdSubmit = async (e) => {
     //デフォルト動作の無効　送信時のリロードを止める
     e.preventDefault();
@@ -133,6 +135,7 @@ const MyPage = ({ setIsMyPage }) => {
     let foundUser = false;
 
     querySnapshot.forEach((doc) => {
+      //該当者が見つかった場合
       if (requestId !== user.uid && doc.id === requestId) {
         setRequestDetails(doc.data());
         setErrorMessage("");
@@ -142,6 +145,7 @@ const MyPage = ({ setIsMyPage }) => {
         return;
       }
 
+      //見つからなかった場合
       if (!foundUser && requestId === user.uid) {
         setRequestDetails(null);
         setErrorMessage("あなたのユーザーIDです");
@@ -154,6 +158,7 @@ const MyPage = ({ setIsMyPage }) => {
     });
   };
 
+  //承認待ちを取得
   const getPendingUser = async () => {
     const myId = user.uid;
     const pendingUserCollectionRef = collection(
@@ -171,6 +176,7 @@ const MyPage = ({ setIsMyPage }) => {
     }
   };
 
+  //フレンド一覧を取得
   const getFriendList = async () => {
     const myId = user.uid;
     const friendCollectionRef = collection(db, "user", myId, "friends");
@@ -208,9 +214,9 @@ const MyPage = ({ setIsMyPage }) => {
         プロフィール
       </Typography>
       <Paper
-        elevation={3} // Paperの立体感を追加
+        elevation={3}
         sx={{
-          width: "80%", // 横幅を画面の80%に設定
+          width: "80%",
           margin: "auto",
           padding: 3,
           display: "flex",
@@ -227,7 +233,7 @@ const MyPage = ({ setIsMyPage }) => {
           spacing={2}
           alignItems="center"
           justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%" }} // Stackを親要素の幅いっぱいに広げる
+          sx={{ width: "100%" }}
         >
           <Avatar
             sx={{
@@ -310,8 +316,8 @@ const MyPage = ({ setIsMyPage }) => {
             sx={{
               display: "flex",
               width: "50%",
-              justifyContent: "center", // 横方向に中央揃え
-              alignItems: "center", // 垂直方向に中央揃え
+              justifyContent: "center", // 横方向
+              alignItems: "center", // 垂直方向
               margin: "auto",
               marginBottom: "40px",
             }}
@@ -371,7 +377,6 @@ const MyPage = ({ setIsMyPage }) => {
           value={requestId}
           onChange={(e) => {
             setRequestId(e.target.value.trim());
-            // console.log(requestId);
           }}
         />
         <Button variant="contained" type="submit">
@@ -391,10 +396,10 @@ const MyPage = ({ setIsMyPage }) => {
         <Alert
           severity="error"
           sx={{
-            display: "flex", // 必要なスタイルを追加
+            display: "flex",
             width: "50%",
-            justifyContent: "center", // 横方向に中央揃え
-            alignItems: "center", // 垂直方向に中央揃え
+            justifyContent: "center", // 横方向
+            alignItems: "center", // 垂直方向
             margin: "auto",
             marginBottom: "40px",
             marginTop: "10px",

@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 import "./App.css";
 import { Header } from "./components/Header";
 import { Loading } from "./pages/Loading";
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import MyPage from "./pages/MyPage";
 import MyFavorite from "./pages/MyFavorite";
 import FriendFavorite from "./pages/FriendFavorite";
-
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import NotFound from "./pages/NotFound";
 
 const App = () => {

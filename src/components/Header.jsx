@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { auth } from "../firebase.js";
+import { signOut } from "firebase/auth";
+
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-
-import { auth } from "../firebase.js";
-import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 
 export const Header = ({ isAuth, setIsAuth, isMyPage }) => {
   const navigate = useNavigate();

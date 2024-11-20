@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 import { PokemonCard } from "../components/PokemonCard";
 
+import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
-import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-
-import { auth } from "../firebase";
-import { Typography } from "@mui/material";
 
 const Home = ({ setIsMyPage }) => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
@@ -25,8 +25,6 @@ const Home = ({ setIsMyPage }) => {
       }
     });
   }, []);
-
-  //   console.log("currentUser", auth.currentUser);
 
   const apiLimit = 24; //カード数 2,3,4の公倍数がいい？
   let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
@@ -100,13 +98,8 @@ const Home = ({ setIsMyPage }) => {
     setIsMyPage(false);
   }, []);
 
-  //   useEffect(() => {
-  //     console.log(pokemonDetails);
-  //   }, [pokemonDetails]);
-
   useEffect(() => {
     fetchApi();
-    // console.log("offset=", offset);
   }, [offset]);
 
   return (
@@ -114,7 +107,7 @@ const Home = ({ setIsMyPage }) => {
       style={{
         backgroundColor: "#fffaf0",
         minHeight: "100vh", // 画面全体の高さ
-        minWidth: "98vw", //横スクロールバー発生対策で98vw　縦スクロールバーの幅も含めて計算するらしい？
+        minWidth: "98vw", //横スクロールバー発生対策で98vw 縦スクロールバーの幅も含めて計算するらしい
         display: "flex",
         flexDirection: "column",
       }}
@@ -191,7 +184,7 @@ const Home = ({ setIsMyPage }) => {
                 key={index}
                 style={{
                   flex: "1 1 20%", // % の幅で並べている（要調整）
-                  maxWidth: "400px", // カードの最大幅
+                  maxWidth: "400px",
                   padding: "20px",
                 }}
               >

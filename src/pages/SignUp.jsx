@@ -1,21 +1,12 @@
-import { useState, useEffect } from "react";
-
-import { Box, TextField, Button, Typography, Container } from "@mui/material";
-import Alert from "@mui/material/Alert";
-
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase";
-import {
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  deleteDoc,
-  getDocs,
-  getDoc,
-} from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+
+import { Box, TextField, Button, Typography, Container } from "@mui/material";
+import Alert from "@mui/material/Alert";
 
 const SignUp = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
@@ -36,17 +27,14 @@ const SignUp = ({ setIsAuth }) => {
     //デフォルト動作の無効　送信時のリロードを止める
     e.preventDefault();
 
+    // Signed up
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        // console.log(userCredential);
-
+      .then(() => {
         setIsAuth(true);
         navigate("/");
       })
       .then(() => {
         const user = auth.currentUser;
-        // console.log(user);
 
         const data = {
           id: user.uid,
@@ -82,15 +70,11 @@ const SignUp = ({ setIsAuth }) => {
         style={{
           backgroundColor: "#ffffff",
           marginTop: "70px",
-          //   marginTop: "100px", //3つのとき
         }}
       >
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
-        {/* <Typography variant="h5" sx={{ color: "red" }}>
-          {errorMessage}
-        </Typography> */}
         {errorMessage ? (
           <Alert severity="error" sx={{ width: "38%" }}>
             {errorMessage}
@@ -103,19 +87,6 @@ const SignUp = ({ setIsAuth }) => {
           sx={{ display: "flex", flexDirection: "column", width: "40%" }}
           onSubmit={handleSubmit}
         >
-          {/* <TextField
-            required
-            id="username"
-            label="User name"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            fullWidth
-            style={{
-              marginTop: "40px",
-              marginBottom: "20px",
-            }}
-          /> */}
           <TextField
             required
             id="email"

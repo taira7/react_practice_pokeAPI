@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
+import { db } from "../firebase";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
+
 import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-
-import { collection, getDocs, setDoc, doc } from "firebase/firestore";
-import { db } from "../firebase";
 
 export const RequestCard = ({
   requestDetails,
@@ -12,13 +12,9 @@ export const RequestCard = ({
   setRequestDetails,
 }) => {
   const [friend, setFriend] = useState(false);
-  // console.log(myDetails);
 
   const myId = myDetails.uid;
   const friendId = requestDetails.id;
-
-  // console.log("myId", myId);
-  // console.log("friendId", friendId);
 
   const friendCollectionCheck = async () => {
     const friendsCollectionRef = collection(db, "user", myId, "friends");
@@ -54,10 +50,6 @@ export const RequestCard = ({
     friendCollectionCheck();
   }, []);
 
-  useEffect(() => {
-    friendCollectionCheck();
-  }, [myDetails, requestDetails]);
-
   return (
     <div
       style={{
@@ -67,9 +59,9 @@ export const RequestCard = ({
       }}
     >
       <Paper
-        elevation={3} // Paperの立体感を追加
+        elevation={3}
         sx={{
-          width: "80%", // 横幅を画面の80%に設定
+          width: "80%",
           margin: "auto",
           padding: 3,
           display: "flex",
@@ -86,7 +78,7 @@ export const RequestCard = ({
           spacing={2}
           alignItems="center"
           justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%", padding: "10px", paddingRight: "30px" }} // Stackを親要素の幅いっぱいに広げる
+          sx={{ width: "100%", padding: "10px", paddingRight: "30px" }}
         >
           <Avatar
             sx={{

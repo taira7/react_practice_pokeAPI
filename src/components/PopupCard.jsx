@@ -1,5 +1,15 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
+
+import { auth, db } from "../firebase";
+import {
+  doc,
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
+
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,16 +22,6 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { pink } from "@mui/material/colors";
-
-import { auth, db } from "../firebase";
-import {
-  doc,
-  addDoc,
-  collection,
-  deleteDoc,
-  getDocs,
-  getDoc,
-} from "firebase/firestore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -50,6 +50,7 @@ export const PopupCard = ({
   //タイプ 配列
   const pokemonTypes = details.types;
 
+  //表示するデータ
   const weight = (parseInt(details.weight) / 10).toFixed(1);
   const height = (parseInt(details.height) / 10).toFixed(1);
 
@@ -68,7 +69,6 @@ export const PopupCard = ({
 
   const getFavData = async () => {
     const uid = auth.currentUser.uid;
-    // console.log(auth.currentUser);
 
     const userDocRef = doc(db, "user", uid);
     const favoriteCollectionRef = collection(userDocRef, "favorite");
@@ -78,9 +78,7 @@ export const PopupCard = ({
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
         let data = doc.data();
-        // console.log(data);
         if (data.id === details.id) {
-          // console.log("data.id:", data.id, "===", "details.id:", details.id);
           setFavorite(true);
 
           //documentの自動生成id
@@ -107,7 +105,7 @@ export const PopupCard = ({
     //userCollection， uidDocument, favoriteSubCollectionがなければ自動生成される
     //あればSubCollectionにdocumentを追加
 
-    await addDoc(favoriteCollectionRef, data); //自動id
+    await addDoc(favoriteCollectionRef, data); //自動生成されるid
     getFavData();
   };
 
@@ -143,10 +141,10 @@ export const PopupCard = ({
         sx={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center", // 画像を中央に配置
+          alignItems: "center",
         }}
       >
-        {/* 画像　表裏　切替 */}
+        {/* 画像 表裏 切替 */}
         {pokemonImage ? (
           <img src={image_front} width="80%" height="63%" />
         ) : (
@@ -243,7 +241,7 @@ export const PopupCard = ({
 
         <DialogContentText>height: {height}m</DialogContentText>
         <DialogContentText>weight: {weight}kg</DialogContentText>
-        {/* kg ?　確認 */}
+
         <Fab
           size="small"
           color="secondary"

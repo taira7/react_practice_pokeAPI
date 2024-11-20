@@ -1,8 +1,4 @@
-import { useState, useEffect } from "react";
-
-import { Box, TextField, Button, Typography, Container } from "@mui/material";
-import Alert from "@mui/material/Alert";
-
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase.js";
@@ -12,20 +8,15 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 
+import { Box, TextField, Button, Typography, Container } from "@mui/material";
+import Alert from "@mui/material/Alert";
+
 const SignIn = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,7 +26,6 @@ const SignIn = ({ setIsAuth }) => {
         return signInWithEmailAndPassword(auth, email, password);
       })
       .then(() => {
-        console.log(auth.currentUser);
         setIsAuth(true);
         navigate("/");
       })
@@ -94,7 +84,11 @@ const SignIn = ({ setIsAuth }) => {
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={handleEmailChange}
+            onChange={
+              (handleEmailChange = (e) => {
+                setEmail(e.target.value);
+              })
+            }
           />
           <TextField
             required
@@ -107,7 +101,11 @@ const SignIn = ({ setIsAuth }) => {
             style={{
               marginBottom: "40px",
             }}
-            onChange={handlePasswordChange}
+            onChange={
+              (handlePasswordChange = (e) => {
+                setPassword(e.target.value);
+              })
+            }
           />
           <Button
             type="submit"

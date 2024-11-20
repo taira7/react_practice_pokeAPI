@@ -3,14 +3,14 @@ import { useParams } from "react-router";
 
 import { auth, db } from "../firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
+import { FriendPokemonCard } from "../components/FriendPokemonCard";
+import PermissionError from "./PermissionError";
 
 import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
-
-import { FriendPokemonCard } from "../components/FriendPokemonCard";
-import { onAuthStateChanged } from "firebase/auth";
-import PermissionError from "./PermissionError";
 
 const FriendFavorite = ({ setIsMyPage }) => {
   const { MyId } = useParams();
@@ -37,14 +37,10 @@ const FriendFavorite = ({ setIsMyPage }) => {
     const favId = [];
     const favoriteCollectionRef = collection(profileDocRef, "favorite");
     const querySnapshot = await getDocs(favoriteCollectionRef);
-    // const favId = querySnapshot.docs.map((doc) => {
-    //   return doc.data().id
-    // })
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       favId.push(data.id);
     });
-    // console.log(favId);
     setFriendFavId(favId);
   };
 
@@ -61,13 +57,11 @@ const FriendFavorite = ({ setIsMyPage }) => {
   const friendFavoriteList = async () => {
     try {
       const sortedID = friendFavId.sort((a, b) => a - b);
-      //   console.log("sort", sortedID);
       const Items = await Promise.all(
         sortedID.map((id) => {
           return fetchAPI(id);
         })
       );
-      // console.log(Items);
       setFriendFavItems(Items);
     } catch (error) {
       console.log(error);
@@ -87,7 +81,6 @@ const FriendFavorite = ({ setIsMyPage }) => {
   }, []);
 
   useEffect(() => {
-    // console.log("FavId", friendFavId);
     friendFavoriteList();
   }, [friendFavId]);
 
@@ -112,7 +105,7 @@ const FriendFavorite = ({ setIsMyPage }) => {
       </Typography>
       <Paper
         sx={{
-          width: "80%", // 横幅を画面の80%に設定
+          width: "80%",
           margin: "auto",
           padding: 3,
           display: "flex",
@@ -128,7 +121,7 @@ const FriendFavorite = ({ setIsMyPage }) => {
           spacing={2}
           alignItems="center"
           justifyContent="space-between" // 均等に配置
-          sx={{ width: "100%" }} // Stackを親要素の幅いっぱいに広げる
+          sx={{ width: "100%" }}
         >
           <Avatar
             sx={{
@@ -179,10 +172,10 @@ const FriendFavorite = ({ setIsMyPage }) => {
           <Alert
             severity="error"
             sx={{
-              display: "flex", // 必要なスタイルを追加
+              display: "flex",
               width: "50%",
-              justifyContent: "center", // 横方向に中央揃え
-              alignItems: "center", // 垂直方向に中央揃え
+              justifyContent: "center", // 横方向
+              alignItems: "center", // 垂直方向
               margin: "auto",
               marginBottom: "40px",
               marginTop: "10px",
