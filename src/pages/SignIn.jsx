@@ -84,11 +84,9 @@ const SignIn = ({ setIsAuth }) => {
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={
-              (handleEmailChange = (e) => {
-                setEmail(e.target.value);
-              })
-            }
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
           />
           <TextField
             required
@@ -101,11 +99,9 @@ const SignIn = ({ setIsAuth }) => {
             style={{
               marginBottom: "40px",
             }}
-            onChange={
-              (handlePasswordChange = (e) => {
-                setPassword(e.target.value);
-              })
-            }
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
           />
           <Button
             type="submit"

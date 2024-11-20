@@ -15,14 +15,6 @@ const SignUp = ({ setIsAuth }) => {
 
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
   const handleSubmit = async (e) => {
     //デフォルト動作の無効　送信時のリロードを止める
     e.preventDefault();
@@ -99,7 +91,9 @@ const SignUp = ({ setIsAuth }) => {
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={handleEmailChange}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
           />
           <TextField
             required
@@ -112,7 +106,9 @@ const SignUp = ({ setIsAuth }) => {
             style={{
               marginBottom: "40px",
             }}
-            onChange={handlePasswordChange}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
           />
           <Button
             type="submit"
