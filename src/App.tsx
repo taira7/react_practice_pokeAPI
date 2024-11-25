@@ -10,7 +10,7 @@ import { Loading } from "./pages/Loading";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import MyPage from "./pages/MyPage";
+import MyPage from "./pages/Mypage";
 import MyFavorite from "./pages/MyFavorite";
 import FriendFavorite from "./pages/FriendFavorite";
 import NotFound from "./pages/NotFound";

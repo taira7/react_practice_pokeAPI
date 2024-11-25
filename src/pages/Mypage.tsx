@@ -12,9 +12,9 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-import { RequestCard } from "../components/RequestCard.jsx";
-import { PendingRequestCard } from "../components/PendingRequestCard.jsx";
-import { FriendCard } from "../components/FriendCard.jsx";
+import { RequestCard } from "../components/RequestCard.js";
+import { PendingRequestCard } from "../components/PendingRequestCard.js";
+import { FriendCard } from "../components/FriendCard.js";
 
 import {
   Paper,
