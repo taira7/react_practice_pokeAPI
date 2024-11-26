@@ -11,13 +11,30 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { pink } from "@mui/material/colors";
 
-export const PokemonCard = ({ pokemon }) => {
-  let pokemonTypes = pokemon.types;
-  let details = pokemon;
+type PokemonType = {
+  type: {
+    name: string;
+  }[];
+};
 
-  const [open, setOpen] = useState(false);
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: PokemonType[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
 
-  const [favorite, setFavorite] = useState(false);
+export const PokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
+  const details: PokemonData = pokemon;
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [favorite, setFavorite] = useState<boolean>(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -57,8 +74,8 @@ export const PokemonCard = ({ pokemon }) => {
             {pokemon.name}
           </Typography>
           {/* 全角空白は空欄表示用 */}
-          {pokemonTypes.map((data, i) => {
-            const typeColors = {
+          {pokemon.types.map((data, i) => {
+            const typeColors: { [key: string]: string } = {
               normal: "#C1C2C1",
               fighting: "#D67873",
               flying: "#C6B7F5",
@@ -81,34 +98,34 @@ export const PokemonCard = ({ pokemon }) => {
               unknown: "#FFDC52",
             };
 
-            if (pokemonTypes.length === 2) {
+            if (pokemon.types.length === 2) {
               return (
                 <Typography key={i}>
                   Type {i + 1}:
                   <span
                     style={{
-                      backgroundColor: typeColors[data.type.name],
+                      backgroundColor: typeColors[data.type[i].name],
                       padding: "4px",
                       borderRadius: "4px",
                     }}
                   >
-                    {data.type.name}
+                    {data.type[i].name}
                   </span>
                 </Typography>
               );
-            } else if (pokemonTypes.length === 1) {
+            } else if (pokemon.types.length === 1) {
               return (
                 <div key={i}>
                   <Typography key={i}>
                     Type {i + 1}:
                     <span
                       style={{
-                        backgroundColor: typeColors[data.type.name],
+                        backgroundColor: typeColors[data.type[i].name],
                         padding: "4px",
                         borderRadius: "4px",
                       }}
                     >
-                      {data.type.name}
+                      {data.type[i].name}
                     </span>
                   </Typography>
                   <Typography key="empty">　</Typography>

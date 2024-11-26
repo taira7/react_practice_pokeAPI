@@ -22,40 +22,66 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { pink } from "@mui/material/colors";
+import { TransitionProps } from "@mui/material/transitions";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const PopupCard = ({
+type PokemonType = {
+  type: {
+    name: string;
+  }[];
+};
+
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: PokemonType[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
+
+type PopupCardProps = {
+  details: PokemonData;
+  open: boolean;
+  handleClose: () => void;
+  favorite: boolean;
+  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+type FavoriteData = {
+  id: number;
+};
+
+export const PopupCard: React.FC<PopupCardProps> = ({
   details,
   open,
   handleClose,
   favorite,
   setFavorite,
 }) => {
-  const [pokemonImage, setPokemonImage] = useState(true);
+  const [pokemonImage, setPokemonImage] = useState<boolean>(true);
 
   //documentの自動生成id 削除に使用
-  const [docAutoId, setDocAutoId] = useState("");
+  const [docAutoId, setDocAutoId] = useState<string>("");
 
   const handleImageChange = () => {
-    if (pokemonImage == true) {
+    if (pokemonImage === true) {
       setPokemonImage(false);
     } else {
       setPokemonImage(true);
     }
   };
-
-  //タイプ 配列
-  const pokemonTypes = details.types;
-
-  //表示するデータ
-  const weight = (parseInt(details.weight) / 10).toFixed(1);
-  const height = (parseInt(details.height) / 10).toFixed(1);
-
-  const image_front = `${details.sprites.front_default}`;
-  const image_back = `${details.sprites.back_default}`;
 
   const handleFavIconClick = () => {
     if (!favorite) {
@@ -68,16 +94,21 @@ export const PopupCard = ({
   };
 
   const getFavData = async () => {
-    const uid = auth.currentUser.uid;
+    const uid: string | undefined = auth.currentUser?.uid;
+    //undefinedのとき，サインアウトしているとき
+    if (!uid) {
+      return;
+    }
 
     const userDocRef = doc(db, "user", uid);
     const favoriteCollectionRef = collection(userDocRef, "favorite");
 
     const getUserDocRef = await getDoc(userDocRef);
-    if (!getUserDocRef.empty) {
+    if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
-        let data = doc.data();
+        //
+        const data: FavoriteData = doc.data() as FavoriteData;
         if (data.id === details.id) {
           setFavorite(true);
 
@@ -91,9 +122,13 @@ export const PopupCard = ({
   const saveFav = async () => {
     //ドキュメントの追加のみ 上書きされるので サブコレクションを使用する
 
-    const uid = auth.currentUser.uid;
+    const uid: string | undefined = auth.currentUser?.uid;
+    //undefinedのとき，サインアウトしているとき
+    if (!uid) {
+      return;
+    }
 
-    const data = {
+    const data: FavoriteData = {
       id: details.id,
     };
 
@@ -106,11 +141,15 @@ export const PopupCard = ({
     //あればSubCollectionにdocumentを追加
 
     await addDoc(favoriteCollectionRef, data); //自動生成されるid
-    getFavData();
+    // getFavData();
   };
 
-  const removeFav = async (autoId) => {
-    const uid = auth.currentUser.uid;
+  const removeFav = async (autoId: string) => {
+    const uid: string | undefined = auth.currentUser?.uid;
+    //undefinedのとき，サインアウトしているとき
+    if (!uid) {
+      return;
+    }
 
     const userDocRef = doc(db, "user", uid);
     const favoriteCollectionRef = collection(userDocRef, "favorite");
@@ -118,7 +157,7 @@ export const PopupCard = ({
     const favDocRef = doc(favoriteCollectionRef, autoId);
     await deleteDoc(favDocRef);
 
-    getFavData();
+    // getFavData();
   };
 
   useEffect(() => {
@@ -146,9 +185,9 @@ export const PopupCard = ({
       >
         {/* 画像 表裏 切替 */}
         {pokemonImage ? (
-          <img src={image_front} width="80%" height="63%" />
+          <img src={details.sprites.front_default} width="80%" height="63%" />
         ) : (
-          <img src={image_back} width="80%" height="63%" />
+          <img src={details.sprites.back_default} width="80%" height="63%" />
         )}
 
         {/* お気に入りアイコン */}
@@ -178,8 +217,8 @@ export const PopupCard = ({
         <DialogTitle>{details.name}</DialogTitle>
 
         {/* タイプ */}
-        {pokemonTypes.map((data, i) => {
-          const typeColors = {
+        {details.types.map((data, i) => {
+          const typeColors: { [key: string]: string } = {
             normal: "#C1C2C1",
             fighting: "#D67873",
             flying: "#C6B7F5",
@@ -202,34 +241,34 @@ export const PopupCard = ({
             unknown: "#FFDC52",
           };
 
-          if (pokemonTypes.length === 2) {
+          if (details.types.length === 2) {
             return (
               <DialogContentText key={i}>
                 Type {i + 1}:
                 <span
                   style={{
-                    backgroundColor: typeColors[data.type.name],
+                    backgroundColor: typeColors[data.type[i].name],
                     padding: "4px",
                     borderRadius: "4px",
                   }}
                 >
-                  {data.type.name}
+                  {data.type[i].name}
                 </span>
               </DialogContentText>
             );
-          } else if (pokemonTypes.length === 1) {
+          } else if (details.types.length === 1) {
             return (
               <div key={i}>
                 <DialogContentText>
                   Type {i + 1}:
                   <span
                     style={{
-                      backgroundColor: typeColors[data.type.name],
+                      backgroundColor: typeColors[data.type[i].name],
                       padding: "4px",
                       borderRadius: "4px",
                     }}
                   >
-                    {data.type.name}
+                    {data.type[i].name}
                   </span>
                 </DialogContentText>
                 {/* 全角空白は空欄表示用 */}
@@ -239,8 +278,12 @@ export const PopupCard = ({
           }
         })}
 
-        <DialogContentText>height: {height}m</DialogContentText>
-        <DialogContentText>weight: {weight}kg</DialogContentText>
+        <DialogContentText>
+          height: {(details.height / 10).toFixed(1)}m
+        </DialogContentText>
+        <DialogContentText>
+          weight: {(details.weight / 10).toFixed(1)}kg
+        </DialogContentText>
 
         <Fab
           size="small"

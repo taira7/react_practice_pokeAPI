@@ -11,14 +11,36 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-type HomeProps = {
-  setIsMyPage: React.Dispatch<React.SetStateAction<boolean>>
-}
+type PokeApiResponse = {
+  results: [{ url: string }];
+};
 
-const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
-  const [pokemonDetails, setPokemonDetails] = useState([]);
-  const [offset, setOffset] = useState(0);
-  const [inputValue, setInputValue] = useState("");
+type PokemonType = {
+  type: {
+    name: string;
+  }[];
+};
+
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: PokemonType[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
+
+const Home = ({
+  setIsMyPage,
+}: {
+  setIsMyPage: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const [pokemonDetails, setPokemonDetails] = useState<PokemonData[]>([]);
+  const [offset, setOffset] = useState<number>(0);
+  const [inputValue, setInputValue] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -33,13 +55,13 @@ const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
   const apiLimit: number = 24; //カード数 2,3,4の公倍数がいい？
   const apiURL: string = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
 
-  const getDetail = async (url) => {
+  const getDetail = async (url: string): Promise<PokemonData | null> => {
     try {
-      const response = await fetch(url.url);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`レスポンスステータス: ${response.status}`);
       }
-      const data = await response.json();
+      const data: PokemonData = await response.json();
       return data;
     } catch (error) {
       console.log(error);
@@ -47,13 +69,16 @@ const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
     }
   };
 
-  const loadDetail = async (pokeData) => {
-    const pokemonRecord = await Promise.all(
+  const loadDetail = async (pokeData: { url: string }[]) => {
+    const pokemonRecord: (PokemonData | null)[] = await Promise.all(
       pokeData.map((data) => {
-        return getDetail(data);
+        return getDetail(data.url);
       })
     );
-    setPokemonDetails(pokemonRecord);
+    //nullを除去
+    setPokemonDetails(
+      pokemonRecord.filter((pokemon) => pokemon !== null) as PokemonData[]
+    );
   };
 
   const fetchApi = async () => {
@@ -63,7 +88,7 @@ const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
         throw new Error(`レスポンスステータス: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: PokeApiResponse = await response.json();
       loadDetail(data.results);
 
       return data;
@@ -82,11 +107,11 @@ const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
     }
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleInputSubmit = (event) => {
+  const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     //デフォルト動作の無効 送信時のリロードを止める
     event.preventDefault();
 

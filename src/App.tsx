@@ -10,16 +10,16 @@ import { Loading } from "./pages/Loading";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import MyPage from "./pages/Mypage";
+import MyPage from "./pages/MyPage";
 import MyFavorite from "./pages/MyFavorite";
 import FriendFavorite from "./pages/FriendFavorite";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
-  const [isAuth, setIsAuth] = useState(false);
-  const [isMyPage, setIsMyPage] = useState(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [isMyPage, setIsMyPage] = useState<boolean>(false);
 
-  const [authChecking, setAuthChecking] = useState(true);
+  const [authChecking, setAuthChecking] = useState<boolean>(true);
 
   useEffect(() => {
     const checkAuthState = onAuthStateChanged(auth, (user) => {
@@ -42,19 +42,12 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <Header
-        isAuth={isAuth}
-        setIsAuth={setIsAuth}
-        isMyPage={isMyPage}
-      />
+      <Header isAuth={isAuth} setIsAuth={setIsAuth} isMyPage={isMyPage} />
       <Routes>
         <Route path="/" element={<Home setIsMyPage={setIsMyPage} />} />
         <Route path="/SignIn" element={<SignIn setIsAuth={setIsAuth} />} />
         <Route path="/SignUp" element={<SignUp setIsAuth={setIsAuth} />} />
-        <Route
-          path="/MyPage"
-          element={<MyPage setIsMyPage={setIsMyPage} />}
-        />
+        <Route path="/MyPage" element={<MyPage setIsMyPage={setIsMyPage} />} />
         <Route
           path="/MyFavorite"
           element={<MyFavorite setIsMyPage={setIsMyPage} />}

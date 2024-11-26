@@ -94,7 +94,7 @@ const MyPage = ({ setIsMyPage }) => {
       });
     }
 
-    //ffriendsサブコレクションの削除
+    //friendsサブコレクションの削除
     const friendsCollectionRef = collection(userDocRef, "friends");
     if (getUserDocRef.exists) {
       const querySnapshot = await getDocs(friendsCollectionRef);

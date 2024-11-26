@@ -11,8 +11,14 @@ import Fab from "@mui/material/Fab";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { pink } from "@mui/material/colors";
+import { TransitionProps } from "@mui/material/transitions";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
