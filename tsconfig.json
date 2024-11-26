@@ -23,7 +23,8 @@
         "useDefineForClassFields": true
     },
       "include": [
-        "src"
+        "src",
+        "vite-env.d.ts"
       ],
       "references": [
         {

@@ -46,7 +46,6 @@ const App = () => {
         isAuth={isAuth}
         setIsAuth={setIsAuth}
         isMyPage={isMyPage}
-        setIsMyPage={setIsMyPage}
       />
       <Routes>
         <Route path="/" element={<Home setIsMyPage={setIsMyPage} />} />
@@ -54,7 +53,7 @@ const App = () => {
         <Route path="/SignUp" element={<SignUp setIsAuth={setIsAuth} />} />
         <Route
           path="/MyPage"
-          element={<MyPage isAuth={isAuth} setIsMyPage={setIsMyPage} />}
+          element={<MyPage setIsMyPage={setIsMyPage} />}
         />
         <Route
           path="/MyFavorite"

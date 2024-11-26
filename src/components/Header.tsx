@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase.js";
@@ -8,7 +9,13 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
-export const Header = ({ isAuth, setIsAuth, isMyPage }) => {
+type HeaderProps ={
+  isAuth: boolean;
+  setIsAuth:React.Dispatch<React.SetStateAction<boolean>>;
+  isMyPage:boolean;
+}
+
+export const Header:React.FC<HeaderProps> = ({ isAuth, setIsAuth, isMyPage }) => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {

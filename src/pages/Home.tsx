@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase";
@@ -11,7 +11,11 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const Home = ({ setIsMyPage }) => {
+type HomeProps = {
+  setIsMyPage: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const Home:React.FC<HomeProps> = ({ setIsMyPage }) => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [offset, setOffset] = useState(0);
   const [inputValue, setInputValue] = useState("");
@@ -26,8 +30,8 @@ const Home = ({ setIsMyPage }) => {
     });
   }, []);
 
-  const apiLimit = 24; //カード数 2,3,4の公倍数がいい？
-  let apiURL = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
+  const apiLimit: number = 24; //カード数 2,3,4の公倍数がいい？
+  const apiURL: string = `https://pokeapi.co/api/v2/pokemon?limit=${apiLimit}&offset=${offset}`;
 
   const getDetail = async (url) => {
     try {
@@ -83,7 +87,7 @@ const Home = ({ setIsMyPage }) => {
   };
 
   const handleInputSubmit = (event) => {
-    //デフォルト動作の無効　送信時のリロードを止める
+    //デフォルト動作の無効 送信時のリロードを止める
     event.preventDefault();
 
     const num = parseInt(inputValue, 10);
