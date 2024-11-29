@@ -28,11 +28,11 @@ import { AccountCircle } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import Alert from "@mui/material/Alert";
 
-const MyPage = ({ setIsMyPage }) => {
+const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction<boolean>>}) => {
   //フレンド申請関連
-  const [requestId, setRequestId] = useState("");
+  const [requestId, setRequestId] = useState<string>("");
   const [requestDetails, setRequestDetails] = useState();
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   //フレンド承認待ち関連
   const [pendingUsers, setPendingUsers] = useState();
@@ -64,14 +64,15 @@ const MyPage = ({ setIsMyPage }) => {
   };
 
   const removeDB = async () => {
-    const uid = auth.currentUser.uid;
+    if(!user){return;}
+    const uid = user.uid;
     const userDocRef = doc(db, "user", uid);
 
     const getUserDocRef = await getDoc(userDocRef);
 
     //favoriteサブコレクションの削除
     const favoriteCollectionRef = collection(userDocRef, "favorite");
-    if (getUserDocRef.exists) {
+    if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((favDoc) => {
         deleteDoc(doc(favoriteCollectionRef, favDoc.id));
@@ -80,7 +81,7 @@ const MyPage = ({ setIsMyPage }) => {
 
     //friendRequestサブコレクションの削除
     const requestCollectionRef = collection(userDocRef, "friendRequest");
-    if (getUserDocRef.exists) {
+    if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(requestCollectionRef);
       //受信側の削除
       querySnapshot.forEach((reqDoc) => {
@@ -96,7 +97,7 @@ const MyPage = ({ setIsMyPage }) => {
 
     //friendsサブコレクションの削除
     const friendsCollectionRef = collection(userDocRef, "friends");
-    if (getUserDocRef.exists) {
+    if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(friendsCollectionRef);
       //相手のコレクションから削除
       querySnapshot.forEach((doc) => {
@@ -126,9 +127,9 @@ const MyPage = ({ setIsMyPage }) => {
   };
 
   //ID検索
-  const handleRequestIdSubmit = async (e) => {
+  const handleRequestIdSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     //デフォルト動作の無効　送信時のリロードを止める
-    e.preventDefault();
+    event.preventDefault();
 
     const querySnapshot = await getDocs(collection(db, "user"));
 
@@ -160,6 +161,7 @@ const MyPage = ({ setIsMyPage }) => {
 
   //承認待ちを取得
   const getPendingUser = async () => {
+    if(!user){return}
     const myId = user.uid;
     const pendingUserCollectionRef = collection(
       db,
@@ -178,6 +180,7 @@ const MyPage = ({ setIsMyPage }) => {
 
   //フレンド一覧を取得
   const getFriendList = async () => {
+    if(!user){return}
     const myId = user.uid;
     const friendCollectionRef = collection(db, "user", myId, "friends");
     const querySnapshot = await getDocs(friendCollectionRef);

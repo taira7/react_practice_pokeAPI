@@ -11,15 +11,15 @@ import {
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-const SignIn = ({ setIsAuth }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boolean>>}) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     setPersistence(auth, browserSessionPersistence)
       .then(() => {
@@ -84,7 +84,7 @@ const SignIn = ({ setIsAuth }) => {
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={(e) => {
+            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.target.value);
             }}
           />
@@ -99,7 +99,7 @@ const SignIn = ({ setIsAuth }) => {
             style={{
               marginBottom: "40px",
             }}
-            onChange={(e) => {
+            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value);
             }}
           />

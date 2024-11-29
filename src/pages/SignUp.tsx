@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -8,16 +8,16 @@ import { doc, setDoc } from "firebase/firestore";
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-const SignUp = ({ setIsAuth }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boolean>>}) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    //デフォルト動作の無効　送信時のリロードを止める
-    e.preventDefault();
+  const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
+    //デフォルト動作の無効 送信時のリロードを止める
+    event.preventDefault();
 
     // Signed up
     createUserWithEmailAndPassword(auth, email, password)
@@ -27,6 +27,10 @@ const SignUp = ({ setIsAuth }) => {
       })
       .then(() => {
         const user = auth.currentUser;
+
+        if(!user){
+          return;
+        }
 
         const data = {
           id: user.uid,
@@ -91,7 +95,7 @@ const SignUp = ({ setIsAuth }) => {
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={(e) => {
+            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.target.value);
             }}
           />
@@ -106,7 +110,7 @@ const SignUp = ({ setIsAuth }) => {
             style={{
               marginBottom: "40px",
             }}
-            onChange={(e) => {
+            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value);
             }}
           />
