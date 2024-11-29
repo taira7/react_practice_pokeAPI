@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -14,6 +14,14 @@ const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+  }, []);
 
   const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
     //デフォルト動作の無効 送信時のリロードを止める

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase.js";
@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   setPersistence,
   browserSessionPersistence,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
@@ -17,6 +18,14 @@ const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+  }, []);
 
   const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
