@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { animateScroll as scroll } from "react-scroll";
 
 import { auth, db } from "../firebase.js";
-import { signOut, deleteUser, onAuthStateChanged } from "firebase/auth";
+import { signOut, deleteUser, onAuthStateChanged, User } from "firebase/auth";
 import {
   doc,
   collection,
@@ -28,10 +28,15 @@ import { AccountCircle } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import Alert from "@mui/material/Alert";
 
+type UserData = {
+  id:string;
+  email:string;
+}
+
 const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction<boolean>>}) => {
   //フレンド申請関連
   const [requestId, setRequestId] = useState<string>("");
-  const [requestDetails, setRequestDetails] = useState();
+  const [requestDetails, setRequestDetails] = useState<UserData | null>();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   //フレンド承認待ち関連
@@ -99,14 +104,13 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
     const friendsCollectionRef = collection(userDocRef, "friends");
     if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(friendsCollectionRef);
-      //相手のコレクションから削除
-      querySnapshot.forEach((doc) => {
-        const friendId = doc.id;
+
+      //相手と自分のコレクションを削除
+      querySnapshot.forEach((friDoc) => {
+        const friendId = friDoc.id;
+         //相手のコレクションから削除
         deleteDoc(doc(db, "user", friendId, "friends", uid));
-      });
-      //自分のコレクションを削除
-      querySnapshot.forEach((doc) => {
-        const friendId = doc.id;
+        //自分のコレクションを削除
         deleteDoc(doc(db, "user", uid, "friends", friendId));
       });
     }
@@ -117,6 +121,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
   const handleUserDelete = () => {
     removeDB();
 
+    if(!user){return;}
     deleteUser(user)
       .then(() => {
         console.log("User delete successful");
@@ -128,7 +133,9 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
 
   //ID検索
   const handleRequestIdSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    //デフォルト動作の無効　送信時のリロードを止める
+    if(!user){return;}
+
+    //デフォルト動作の無効 送信時のリロードを止める
     event.preventDefault();
 
     const querySnapshot = await getDocs(collection(db, "user"));
@@ -138,7 +145,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
     querySnapshot.forEach((doc) => {
       //該当者が見つかった場合
       if (requestId !== user.uid && doc.id === requestId) {
-        setRequestDetails(doc.data());
+        setRequestDetails(doc.data() as UserData);
         setErrorMessage("");
         setRequestId("");
         scroll.scrollToBottom();
