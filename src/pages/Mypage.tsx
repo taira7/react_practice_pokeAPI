@@ -33,6 +33,17 @@ type UserData = {
   email:string;
 }
 
+type PendingUserData = {
+  id :string;
+  email:string;
+  isReceive:boolean;
+}
+
+type friendData = {
+  id:string;
+  email:string;
+}
+
 const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction<boolean>>}) => {
   //フレンド申請関連
   const [requestId, setRequestId] = useState<string>("");
@@ -40,10 +51,10 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   //フレンド承認待ち関連
-  const [pendingUsers, setPendingUsers] = useState();
+  const [pendingUsers, setPendingUsers] = useState<PendingUserData[] | null>(null);
 
   //フレンド一覧関連
-  const [friendData, setFriendData] = useState();
+  const [friendData, setFriendData] = useState<friendData[] | null>(null);
 
   const navigate = useNavigate();
 
@@ -179,7 +190,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
     const querySnapshot = await getDocs(pendingUserCollectionRef);
     if (!querySnapshot.empty) {
       const pendingUserDetails = querySnapshot.docs.map((doc) => {
-        return doc.data();
+        return doc.data() as PendingUserData;
       });
       setPendingUsers(pendingUserDetails);
     }
@@ -193,7 +204,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
     const querySnapshot = await getDocs(friendCollectionRef);
     if (!querySnapshot.empty) {
       const friendDetails = querySnapshot.docs.map((doc) => {
-        return doc.data();
+        return doc.data() as friendData;
       });
       setFriendData(friendDetails);
     }
