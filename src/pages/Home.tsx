@@ -16,9 +16,9 @@ type PokeApiResponse = {
 };
 
 type PokemonType = {
-  type: {
+  type: Array<{
     name: string;
-  }[];
+  }>
 };
 
 type PokemonData = {

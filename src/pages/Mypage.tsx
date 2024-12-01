@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { animateScroll as scroll } from "react-scroll";
 
 import { auth, db } from "../firebase.js";
-import { signOut, deleteUser, onAuthStateChanged, User } from "firebase/auth";
+import { signOut, deleteUser, onAuthStateChanged} from "firebase/auth";
 import {
   doc,
   collection,
@@ -151,7 +151,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
 
     const querySnapshot = await getDocs(collection(db, "user"));
 
-    let foundUser = false;
+    let foundUser: boolean = false;
 
     querySnapshot.forEach((doc) => {
       //該当者が見つかった場合
