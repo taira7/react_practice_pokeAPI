@@ -9,13 +9,17 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
-type HeaderProps ={
+type HeaderProps = {
   isAuth: boolean;
-  setIsAuth:React.Dispatch<React.SetStateAction<boolean>>;
-  isMyPage:boolean;
-}
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+  isMyPage: boolean;
+};
 
-export const Header:React.FC<HeaderProps> = ({ isAuth, setIsAuth, isMyPage }) => {
+export const Header: React.FC<HeaderProps> = ({
+  isAuth,
+  setIsAuth,
+  isMyPage,
+}) => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {

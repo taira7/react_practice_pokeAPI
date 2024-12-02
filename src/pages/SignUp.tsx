@@ -1,14 +1,21 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boolean>>}) => {
+const SignUp = ({
+  setIsAuth,
+}: {
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -23,7 +30,7 @@ const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
     });
   }, []);
 
-  const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     //デフォルト動作の無効 送信時のリロードを止める
     event.preventDefault();
 
@@ -36,7 +43,7 @@ const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
       .then(() => {
         const user = auth.currentUser;
 
-        if(!user){
+        if (!user) {
           return;
         }
 
@@ -103,7 +110,7 @@ const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.target.value);
             }}
           />
@@ -118,7 +125,7 @@ const SignUp = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
             style={{
               marginBottom: "40px",
             }}
-            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value);
             }}
           />

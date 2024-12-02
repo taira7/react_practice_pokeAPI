@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import React, { useState, useEffect, SetStateAction } from "react";
+import { useNavigate, useParams } from "react-router";
 
 import { auth, db } from "../firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -8,61 +8,101 @@ import { onAuthStateChanged } from "firebase/auth";
 import { FriendPokemonCard } from "../components/FriendPokemonCard";
 import PermissionError from "./PermissionError";
 
-import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
+import { Paper, Typography, Avatar, Stack } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 
-const FriendFavorite = ({ setIsMyPage }) => {
+type UserProfile = {
+  email: string;
+  id: string;
+};
+
+type FavoriteData = {
+  id: number;
+};
+
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
+
+const FriendFavorite = ({
+  setIsMyPage,
+}: {
+  setIsMyPage: React.Dispatch<SetStateAction<boolean>>;
+}) => {
   const { MyId } = useParams();
   const { FriendId } = useParams();
 
-  const [userProfile, setUserProfile] = useState();
-  const [friendProfile, setFriendProfile] = useState();
-  const [friendFavId, setFriendFavId] = useState([]);
-  const [friendFavItems, setFriendFavItems] = useState([]);
+  const [userProfile, setUserProfile] = useState<UserProfile>();
+  const [friendProfile, setFriendProfile] = useState<UserProfile>();
+  const [friendFavId, setFriendFavId] = useState<number[]>([]);
+  const [friendFavItems, setFriendFavItems] = useState<PokemonData[]>([]);
 
-  const currentUserId = auth.currentUser.uid;
+  const navigate = useNavigate();
+
+  const currentUserId: string | undefined = auth.currentUser?.uid;
 
   const getUserData = async () => {
+    if (!MyId) {
+      return;
+    }
     const profileDocRef = doc(db, "user", MyId);
     const profileData = await getDoc(profileDocRef);
-    setUserProfile(profileData.data());
+    const myProfileData: UserProfile = profileData.data() as UserProfile;
+    setUserProfile(myProfileData);
   };
 
   const getFriendData = async () => {
+    if (!FriendId) {
+      return;
+    }
     const profileDocRef = doc(db, "user", FriendId);
     const profileData = await getDoc(profileDocRef);
-    setFriendProfile(profileData.data());
+    const friendProfileData: UserProfile = profileData.data() as UserProfile;
+    setFriendProfile(friendProfileData);
 
-    const favId = [];
+    const favId: number[] = [];
     const favoriteCollectionRef = collection(profileDocRef, "favorite");
     const querySnapshot = await getDocs(favoriteCollectionRef);
     querySnapshot.forEach((doc) => {
-      const data = doc.data();
+      const data: FavoriteData = doc.data() as FavoriteData;
       favId.push(data.id);
     });
     setFriendFavId(favId);
   };
 
-  const fetchAPI = async (id) => {
+  const fetchAPI = async (id: number): Promise<PokemonData | undefined> => {
     try {
       const apiUrl = `https://pokeapi.co/api/v2/pokemon/${id}/`;
       const response = await fetch(apiUrl);
-      const data = await response.json();
+      const data: PokemonData = (await response.json()) as PokemonData;
       return data;
     } catch (error) {
       console.log(error);
     }
   };
+
   const friendFavoriteList = async () => {
     try {
       const sortedID = friendFavId.sort((a, b) => a - b);
-      const Items = await Promise.all(
-        sortedID.map((id) => {
+      const Items: Array<PokemonData | undefined> = await Promise.all(
+        sortedID.map((id: number) => {
           return fetchAPI(id);
         })
       );
-      setFriendFavItems(Items);
+      setFriendFavItems(Items.filter((item) => item !== undefined));
     } catch (error) {
       console.log(error);
     }

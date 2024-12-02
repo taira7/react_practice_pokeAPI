@@ -12,7 +12,11 @@ import {
 import { Box, TextField, Button, Typography, Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boolean>>}) => {
+const SignIn = ({
+  setIsAuth,
+}: {
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -27,7 +31,7 @@ const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
     });
   }, []);
 
-  const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setPersistence(auth, browserSessionPersistence)
@@ -93,7 +97,7 @@ const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
               marginTop: "40px",
               marginBottom: "20px",
             }}
-            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.target.value);
             }}
           />
@@ -108,7 +112,7 @@ const SignIn = ({ setIsAuth }:{setIsAuth:React.Dispatch<React.SetStateAction<boo
             style={{
               marginBottom: "40px",
             }}
-            onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value);
             }}
           />

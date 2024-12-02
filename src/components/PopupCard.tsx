@@ -33,18 +33,16 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-type PokemonType = {
-  type: {
-    name: string;
-  }[];
-};
-
 type PokemonData = {
   id: number;
   name: string;
   height: number;
   weight: number;
-  types: PokemonType[];
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
   sprites: {
     front_default: string;
     back_default: string | undefined;
@@ -247,12 +245,12 @@ export const PopupCard: React.FC<PopupCardProps> = ({
                 Type {i + 1}:
                 <span
                   style={{
-                    backgroundColor: typeColors[data.type[i].name],
+                    backgroundColor: typeColors[data.type.name],
                     padding: "4px",
                     borderRadius: "4px",
                   }}
                 >
-                  {data.type[i].name}
+                  {data.type.name}
                 </span>
               </DialogContentText>
             );
@@ -263,12 +261,12 @@ export const PopupCard: React.FC<PopupCardProps> = ({
                   Type {i + 1}:
                   <span
                     style={{
-                      backgroundColor: typeColors[data.type[i].name],
+                      backgroundColor: typeColors[data.type.name],
                       padding: "4px",
                       borderRadius: "4px",
                     }}
                   >
-                    {data.type[i].name}
+                    {data.type.name}
                   </span>
                 </DialogContentText>
                 {/* 全角空白は空欄表示用 */}

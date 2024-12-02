@@ -12,13 +12,7 @@ import Button from "@mui/material/Button";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 type PokeApiResponse = {
-  results: [{ url: string }];
-};
-
-type PokemonType = {
-  type: Array<{
-    name: string;
-  }>
+  results: Array<{ url: string }>;
 };
 
 type PokemonData = {
@@ -26,7 +20,11 @@ type PokemonData = {
   name: string;
   height: number;
   weight: number;
-  types: PokemonType[];
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
   sprites: {
     front_default: string;
     back_default: string | undefined;
@@ -61,7 +59,7 @@ const Home = ({
       if (!response.ok) {
         throw new Error(`レスポンスステータス: ${response.status}`);
       }
-      const data: PokemonData = await response.json();
+      const data: PokemonData = (await response.json()) as PokemonData;
       return data;
     } catch (error) {
       console.log(error);
@@ -88,7 +86,7 @@ const Home = ({
         throw new Error(`レスポンスステータス: ${response.status}`);
       }
 
-      const data: PokeApiResponse = await response.json();
+      const data: PokeApiResponse = (await response.json()) as PokeApiResponse;
       loadDetail(data.results);
 
       return data;

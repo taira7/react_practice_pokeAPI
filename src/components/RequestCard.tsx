@@ -1,28 +1,49 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { db } from "../firebase";
+import { User } from "firebase/auth";
 import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 
 import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 
-export const RequestCard = ({
+type UserData = {
+  id: string;
+  email: string;
+};
+
+type RequestCardProps = {
+  requestDetails: UserData;
+  myDetails: User | null;
+  setRequestDetails: React.Dispatch<React.SetStateAction<UserData | null>>;
+};
+
+type friendData = {
+  id: string;
+  email: string;
+};
+
+export const RequestCard: React.FC<RequestCardProps> = ({
   requestDetails,
   myDetails,
   setRequestDetails,
 }) => {
   const [friend, setFriend] = useState(false);
 
-  const myId = myDetails.uid;
-  const friendId = requestDetails.id;
+  const myId: string | undefined = myDetails?.uid;
+  const myEmail: string | undefined | null = myDetails?.email;
+  const requestId: string = requestDetails.id;
 
   const friendCollectionCheck = async () => {
+    if (!myId) {
+      return;
+    }
     const friendsCollectionRef = collection(db, "user", myId, "friends");
     const querySnapshot = await getDocs(friendsCollectionRef);
     if (!querySnapshot.empty) {
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.id === friendId) {
+        const data = doc.data() as friendData;
+        if (data.id === requestId) {
           setFriend(true);
         }
       });
@@ -30,16 +51,20 @@ export const RequestCard = ({
   };
 
   const handleClick = async () => {
+    if (!myId || !myEmail) {
+      return;
+    }
+
     //受信者側
-    await setDoc(doc(db, "user", friendId, "friendRequest", myId), {
-      email: myDetails.email,
+    await setDoc(doc(db, "user", requestId, "friendRequest", myId), {
+      email: myEmail,
       id: myId,
       isReceive: true,
     });
     //送信者側
-    await setDoc(doc(db, "user", myId, "friendRequest", friendId), {
+    await setDoc(doc(db, "user", myId, "friendRequest", requestId), {
       email: requestDetails.email,
-      id: friendId,
+      id: requestId,
       isReceive: false,
     });
     setRequestDetails(null);

@@ -11,18 +11,16 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { pink } from "@mui/material/colors";
 
-type PokemonType = {
-  type: {
-    name: string;
-  }[];
-};
-
 type PokemonData = {
   id: number;
   name: string;
   height: number;
   weight: number;
-  types: PokemonType[];
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
   sprites: {
     front_default: string;
     back_default: string | undefined;
@@ -30,8 +28,6 @@ type PokemonData = {
 };
 
 export const PokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
-  const details: PokemonData = pokemon;
-
   const [open, setOpen] = useState<boolean>(false);
 
   const [favorite, setFavorite] = useState<boolean>(false);
@@ -104,12 +100,12 @@ export const PokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
                   Type {i + 1}:
                   <span
                     style={{
-                      backgroundColor: typeColors[data.type[i].name],
+                      backgroundColor: typeColors[data.type.name],
                       padding: "4px",
                       borderRadius: "4px",
                     }}
                   >
-                    {data.type[i].name}
+                    {data.type.name}
                   </span>
                 </Typography>
               );
@@ -120,12 +116,12 @@ export const PokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
                     Type {i + 1}:
                     <span
                       style={{
-                        backgroundColor: typeColors[data.type[i].name],
+                        backgroundColor: typeColors[data.type.name],
                         padding: "4px",
                         borderRadius: "4px",
                       }}
                     >
-                      {data.type[i].name}
+                      {data.type.name}
                     </span>
                   </Typography>
                   <Typography key="empty">　</Typography>
@@ -138,7 +134,7 @@ export const PokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
       <PopupCard
         open={open}
         handleClose={handleClose}
-        details={details}
+        details={pokemon}
         favorite={favorite}
         setFavorite={setFavorite}
       />

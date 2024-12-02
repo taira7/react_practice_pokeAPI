@@ -10,10 +10,23 @@ import CardActionArea from "@mui/material/CardActionArea";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { pink } from "@mui/material/colors";
 
-export const FriendPokemonCard = ({ pokemon }) => {
-  let pokemonTypes = pokemon.types;
-  let details = pokemon;
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
 
+export const FriendPokemonCard = ({ pokemon }: { pokemon: PokemonData }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -50,8 +63,8 @@ export const FriendPokemonCard = ({ pokemon }) => {
             {pokemon.name}
           </Typography>
           {/* 全角空白は空欄表示用 */}
-          {pokemonTypes.map((data, i) => {
-            const typeColors = {
+          {pokemon.types.map((data, i) => {
+            const typeColors: { [key: string]: string } = {
               normal: "#C1C2C1",
               fighting: "#D67873",
               flying: "#C6B7F5",
@@ -74,7 +87,7 @@ export const FriendPokemonCard = ({ pokemon }) => {
               unknown: "#FFDC52",
             };
 
-            if (pokemonTypes.length === 2) {
+            if (pokemon.types.length === 2) {
               return (
                 <Typography key={i}>
                   Type {i + 1}:
@@ -89,7 +102,7 @@ export const FriendPokemonCard = ({ pokemon }) => {
                   </span>
                 </Typography>
               );
-            } else if (pokemonTypes.length === 1) {
+            } else if (pokemon.types.length === 1) {
               return (
                 <div key={i}>
                   <Typography key={i}>
@@ -114,7 +127,7 @@ export const FriendPokemonCard = ({ pokemon }) => {
       <FriendPopupCard
         open={open}
         handleClose={handleClose}
-        details={details}
+        details={pokemon}
       />
     </Card>
   );

@@ -1,16 +1,43 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, SetStateAction } from "react";
+import { useNavigate } from "react-router";
 
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 import { PokemonCard } from "../components/PokemonCard";
 
-import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
+import { Paper, Typography, Avatar, Stack } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 
-const MyFavorite = ({ setIsMyPage }) => {
+type FavoriteItemData = {
+  id: number;
+};
+
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
+
+const MyFavorite = ({
+  setIsMyPage,
+}: {
+  setIsMyPage: React.Dispatch<SetStateAction<boolean>>;
+}) => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -19,19 +46,22 @@ const MyFavorite = ({ setIsMyPage }) => {
     });
   }, []);
 
-  const user = auth.currentUser;
-  const uid = user.uid;
+  const user: User | null = auth.currentUser;
+  const uid: string | undefined = user?.uid;
 
-  const [favItems, setFavItems] = useState([]);
+  const [favItems, setFavItems] = useState<PokemonData[]>([]);
 
-  const getFavoriteId = async () => {
+  const getFavoriteId = async (): Promise<number[] | undefined> => {
+    const favId: number[] = [];
     try {
-      const favId = [];
+      if (!uid) {
+        return;
+      }
       const querySnapshot = await getDocs(
         collection(db, "user", uid, "favorite")
       );
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
+        const data = doc.data() as FavoriteItemData;
         favId.push(data.id);
       });
 
@@ -41,11 +71,11 @@ const MyFavorite = ({ setIsMyPage }) => {
     }
   };
 
-  const fetchApi = async (id) => {
+  const fetchApi = async (id: number): Promise<PokemonData | undefined> => {
     try {
       const apiURL = `https://pokeapi.co/api/v2/pokemon/${id}/`;
       const response = await fetch(apiURL);
-      const data = await response.json();
+      const data: PokemonData = (await response.json()) as PokemonData;
       return data;
     } catch (error) {
       console.log(error);
@@ -55,13 +85,16 @@ const MyFavorite = ({ setIsMyPage }) => {
   const favoriteList = async () => {
     try {
       const ID = await getFavoriteId();
-      const sortedID = ID.sort((a, b) => a - b);
-      const Items = await Promise.all(
-        sortedID.map((id) => {
-          return fetchApi(id);
-        })
-      );
-      setFavItems(Items);
+      const sortedID = ID?.sort((a, b) => a - b);
+
+      if (sortedID) {
+        const Items: Array<PokemonData | undefined> = await Promise.all(
+          sortedID.map((id) => {
+            return fetchApi(id);
+          })
+        );
+        setFavItems(Items.filter((item) => item !== undefined));
+      }
     } catch (error) {
       console.log(error);
     }

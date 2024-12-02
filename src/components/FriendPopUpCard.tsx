@@ -22,8 +22,34 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const FriendPopupCard = ({ details, open, handleClose }) => {
-  const [pokemonImage, setPokemonImage] = useState(true);
+type PokemonData = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
+  sprites: {
+    front_default: string;
+    back_default: string | undefined;
+  };
+};
+
+type FriendPopUpCardProps = {
+  details: PokemonData;
+  open: boolean;
+  handleClose: () => void;
+};
+
+export const FriendPopupCard: React.FC<FriendPopUpCardProps> = ({
+  details,
+  open,
+  handleClose,
+}) => {
+  const [pokemonImage, setPokemonImage] = useState<boolean>(true);
 
   const handleImageChange = () => {
     if (pokemonImage == true) {
@@ -32,16 +58,6 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
       setPokemonImage(true);
     }
   };
-
-  //タイプ 配列
-  const pokemonTypes = details.types;
-
-  //表示させるデータ
-  const weight = (parseInt(details.weight) / 10).toFixed(1);
-  const height = (parseInt(details.height) / 10).toFixed(1);
-
-  const image_front = `${details.sprites.front_default}`;
-  const image_back = `${details.sprites.back_default}`;
 
   return (
     <Dialog
@@ -64,9 +80,9 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
       >
         {/* 画像 表裏 切替 */}
         {pokemonImage ? (
-          <img src={image_front} width="80%" height="63%" />
+          <img src={details.sprites.front_default} width="80%" height="63%" />
         ) : (
-          <img src={image_back} width="80%" height="63%" />
+          <img src={details.sprites.back_default} width="80%" height="63%" />
         )}
 
         {/* お気に入りアイコン */}
@@ -86,8 +102,8 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
         <DialogTitle>{details.name}</DialogTitle>
 
         {/* タイプ */}
-        {pokemonTypes.map((data, i) => {
-          const typeColors = {
+        {details.types.map((data, i) => {
+          const typeColors: { [key: string]: string } = {
             normal: "#C1C2C1",
             fighting: "#D67873",
             flying: "#C6B7F5",
@@ -110,7 +126,7 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
             unknown: "#FFDC52",
           };
 
-          if (pokemonTypes.length === 2) {
+          if (details.types.length === 2) {
             return (
               <DialogContentText key={i}>
                 Type {i + 1}:
@@ -125,7 +141,7 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
                 </span>
               </DialogContentText>
             );
-          } else if (pokemonTypes.length === 1) {
+          } else if (details.types.length === 1) {
             return (
               <div key={i}>
                 <DialogContentText>
@@ -147,8 +163,12 @@ export const FriendPopupCard = ({ details, open, handleClose }) => {
           }
         })}
 
-        <DialogContentText>height: {height}m</DialogContentText>
-        <DialogContentText>weight: {weight}kg</DialogContentText>
+        <DialogContentText>
+          height: {(details.height / 10).toFixed(1)}m
+        </DialogContentText>
+        <DialogContentText>
+          weight: {(details.weight / 10).toFixed(1)}kg
+        </DialogContentText>
         <Fab
           size="small"
           color="secondary"

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { animateScroll as scroll } from "react-scroll";
 
 import { auth, db } from "../firebase.js";
-import { signOut, deleteUser, onAuthStateChanged} from "firebase/auth";
+import { signOut, deleteUser, onAuthStateChanged, User } from "firebase/auth";
 import {
   doc,
   collection,
@@ -29,29 +29,35 @@ import SearchIcon from "@mui/icons-material/Search";
 import Alert from "@mui/material/Alert";
 
 type UserData = {
-  id:string;
-  email:string;
-}
+  id: string;
+  email: string;
+};
 
 type PendingUserData = {
-  id :string;
-  email:string;
-  isReceive:boolean;
-}
+  id: string;
+  email: string;
+  isReceive: boolean;
+};
 
 type friendData = {
-  id:string;
-  email:string;
-}
+  id: string;
+  email: string;
+};
 
-const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction<boolean>>}) => {
+const MyPage = ({
+  setIsMyPage,
+}: {
+  setIsMyPage: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   //フレンド申請関連
   const [requestId, setRequestId] = useState<string>("");
-  const [requestDetails, setRequestDetails] = useState<UserData | null>();
+  const [requestDetails, setRequestDetails] = useState<UserData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   //フレンド承認待ち関連
-  const [pendingUsers, setPendingUsers] = useState<PendingUserData[] | null>(null);
+  const [pendingUsers, setPendingUsers] = useState<PendingUserData[] | null>(
+    null
+  );
 
   //フレンド一覧関連
   const [friendData, setFriendData] = useState<friendData[] | null>(null);
@@ -66,7 +72,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
     });
   }, []);
 
-  const user = auth.currentUser;
+  const user: User | null = auth.currentUser;
 
   const handleSignOut = () => {
     signOut(auth)
@@ -80,8 +86,10 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
   };
 
   const removeDB = async () => {
-    if(!user){return;}
-    const uid = user.uid;
+    if (!user) {
+      return;
+    }
+    const uid: string = user.uid;
     const userDocRef = doc(db, "user", uid);
 
     const getUserDocRef = await getDoc(userDocRef);
@@ -119,7 +127,7 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
       //相手と自分のコレクションを削除
       querySnapshot.forEach((friDoc) => {
         const friendId = friDoc.id;
-         //相手のコレクションから削除
+        //相手のコレクションから削除
         deleteDoc(doc(db, "user", friendId, "friends", uid));
         //自分のコレクションを削除
         deleteDoc(doc(db, "user", uid, "friends", friendId));
@@ -132,7 +140,9 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
   const handleUserDelete = () => {
     removeDB();
 
-    if(!user){return;}
+    if (!user) {
+      return;
+    }
     deleteUser(user)
       .then(() => {
         console.log("User delete successful");
@@ -143,8 +153,12 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
   };
 
   //ID検索
-  const handleRequestIdSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if(!user){return;}
+  const handleRequestIdSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    if (!user) {
+      return;
+    }
 
     //デフォルト動作の無効 送信時のリロードを止める
     event.preventDefault();
@@ -179,7 +193,9 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
 
   //承認待ちを取得
   const getPendingUser = async () => {
-    if(!user){return}
+    if (!user) {
+      return;
+    }
     const myId = user.uid;
     const pendingUserCollectionRef = collection(
       db,
@@ -198,7 +214,9 @@ const MyPage = ({ setIsMyPage }:{setIsMyPage:React.Dispatch<React.SetStateAction
 
   //フレンド一覧を取得
   const getFriendList = async () => {
-    if(!user){return}
+    if (!user) {
+      return;
+    }
     const myId = user.uid;
     const friendCollectionRef = collection(db, "user", myId, "friends");
     const querySnapshot = await getDocs(friendCollectionRef);

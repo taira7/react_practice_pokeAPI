@@ -1,26 +1,47 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { db } from "../firebase";
+import { User } from "firebase/auth";
 import { doc, collection, getDoc, deleteDoc, setDoc } from "firebase/firestore";
 
 import { Paper, Typography, Avatar, Stack, Button } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 
-export const PendingRequestCard = ({ pendingUser, myDetails }) => {
-  const myId = myDetails.uid;
+type PendingUserData = {
+  id: string;
+  email: string;
+  isReceive: boolean;
+};
+
+type PendingRequestCardProps = {
+  pendingUser: PendingUserData;
+  myDetails: User | null;
+};
+
+export const PendingRequestCard: React.FC<PendingRequestCardProps> = ({
+  pendingUser,
+  myDetails,
+}) => {
+  const myId = myDetails?.uid;
   const pendingUserId = pendingUser.id;
 
-  const [isReceive, setIsReceive] = useState();
+  const [isReceive, setIsReceive] = useState<boolean>();
 
   const checkIsReceive = async () => {
+    if (!myId) {
+      return;
+    }
     const details = await getDoc(
       doc(db, "user", myId, "friendRequest", pendingUserId)
     );
-    const data = details.data();
+    const data = details.data() as PendingUserData;
     setIsReceive(data.isReceive);
   };
 
   const handleRejectRequest = async () => {
+    if (!myId) {
+      return;
+    }
     //拒否
     //自分のfriendRequestから相手の情報を削除
     await deleteDoc(doc(db, "user", myId, "friendRequest", pendingUserId));
@@ -30,6 +51,9 @@ export const PendingRequestCard = ({ pendingUser, myDetails }) => {
   };
 
   const handleApproveRequest = async () => {
+    if (!myId) {
+      return;
+    }
     //承認
 
     //自分のフレンドコレクションに追加

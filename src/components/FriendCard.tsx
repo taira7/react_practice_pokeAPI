@@ -6,14 +6,31 @@ import { AccountCircle } from "@mui/icons-material";
 
 import { db } from "../firebase";
 import { doc, deleteDoc } from "firebase/firestore";
+import { User } from "firebase/auth";
 
-export const FriendCard = ({ friendDetails, myDetails }) => {
-  const myId = myDetails.uid;
+type friendData = {
+  id: string;
+  email: string;
+};
+
+type FriendCardProps = {
+  friendDetails: friendData;
+  myDetails: User | null;
+};
+
+export const FriendCard: React.FC<FriendCardProps> = ({
+  friendDetails,
+  myDetails,
+}) => {
+  const myId = myDetails?.uid;
   const friendId = friendDetails.id;
 
   const navigate = useNavigate();
 
   const deleteFriend = async () => {
+    if (!myId) {
+      return;
+    }
     const myFriendsDocRef = doc(db, "user", myId, "friends", friendId);
     const friendFriendsDocRef = doc(db, "user", friendId, "friends", myId);
 
@@ -21,10 +38,6 @@ export const FriendCard = ({ friendDetails, myDetails }) => {
     await deleteDoc(friendFriendsDocRef);
 
     window.location.reload();
-  };
-
-  const ToFriendFavorite = () => {
-    navigate(`/Favorite/${myId}/${friendId}`);
   };
 
   return (
@@ -81,7 +94,9 @@ export const FriendCard = ({ friendDetails, myDetails }) => {
                 backgroundColor: "#87cefa",
               },
             }}
-            onClick={ToFriendFavorite}
+            onClick={() => {
+              navigate(`/Favorite/${myId}/${friendId}`);
+            }}
           >
             お気に入り一覧へ
           </Button>
