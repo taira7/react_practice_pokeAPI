@@ -22,8 +22,9 @@ export const PendingRequestCard: React.FC<PendingRequestCardProps> = ({
   pendingUser,
   myDetails,
 }) => {
-  const myId = myDetails?.uid;
-  const pendingUserId = pendingUser.id;
+  const myId: string | undefined = myDetails?.uid;
+  const myEmail: string | undefined | null = myDetails?.email;
+  const pendingUserId: string = pendingUser.id;
 
   const [isReceive, setIsReceive] = useState<boolean>();
 
@@ -51,7 +52,7 @@ export const PendingRequestCard: React.FC<PendingRequestCardProps> = ({
   };
 
   const handleApproveRequest = async () => {
-    if (!myId) {
+    if (!myId || !myEmail) {
       return;
     }
     //承認
@@ -71,7 +72,7 @@ export const PendingRequestCard: React.FC<PendingRequestCardProps> = ({
       "friends"
     );
     await setDoc(doc(pendingUserFriendsCollectionRef, myId), {
-      email: myDetails.email,
+      email: myEmail,
       id: myId,
     });
 

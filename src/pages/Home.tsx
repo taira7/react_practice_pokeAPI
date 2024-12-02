@@ -12,7 +12,7 @@ import Button from "@mui/material/Button";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 type PokeApiResponse = {
-  results: Array<{ url: string }>;
+  results: { url: string }[];
 };
 
 type PokemonData = {
@@ -68,7 +68,7 @@ const Home = ({
   };
 
   const loadDetail = async (pokeData: { url: string }[]) => {
-    const pokemonRecord: (PokemonData | null)[] = await Promise.all(
+    const pokemonRecord: Array<PokemonData | null> = await Promise.all(
       pokeData.map((data) => {
         return getDetail(data.url);
       })
@@ -88,8 +88,6 @@ const Home = ({
 
       const data: PokeApiResponse = (await response.json()) as PokeApiResponse;
       loadDetail(data.results);
-
-      return data;
     } catch (error) {
       console.log(error);
     }

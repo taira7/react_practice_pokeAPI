@@ -205,9 +205,10 @@ const MyPage = ({
     );
     const querySnapshot = await getDocs(pendingUserCollectionRef);
     if (!querySnapshot.empty) {
-      const pendingUserDetails = querySnapshot.docs.map((doc) => {
-        return doc.data() as PendingUserData;
-      });
+      const pendingUserDetails: PendingUserData[] | null =
+        querySnapshot.docs.map((doc) => {
+          return doc.data() as PendingUserData;
+        });
       setPendingUsers(pendingUserDetails);
     }
   };
@@ -221,9 +222,11 @@ const MyPage = ({
     const friendCollectionRef = collection(db, "user", myId, "friends");
     const querySnapshot = await getDocs(friendCollectionRef);
     if (!querySnapshot.empty) {
-      const friendDetails = querySnapshot.docs.map((doc) => {
-        return doc.data() as friendData;
-      });
+      const friendDetails: friendData[] | null = querySnapshot.docs.map(
+        (doc) => {
+          return doc.data() as friendData;
+        }
+      );
       setFriendData(friendDetails);
     }
   };

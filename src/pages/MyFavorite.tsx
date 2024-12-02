@@ -61,7 +61,7 @@ const MyFavorite = ({
         collection(db, "user", uid, "favorite")
       );
       querySnapshot.forEach((doc) => {
-        const data = doc.data() as FavoriteItemData;
+        const data: FavoriteItemData = doc.data() as FavoriteItemData;
         favId.push(data.id);
       });
 

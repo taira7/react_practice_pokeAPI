@@ -22,8 +22,8 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   friendDetails,
   myDetails,
 }) => {
-  const myId = myDetails?.uid;
-  const friendId = friendDetails.id;
+  const myId: string | undefined = myDetails?.uid;
+  const friendId: string = friendDetails.id;
 
   const navigate = useNavigate();
 

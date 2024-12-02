@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  User,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -41,7 +42,7 @@ const SignUp = ({
         navigate("/");
       })
       .then(() => {
-        const user = auth.currentUser;
+        const user: User | null = auth.currentUser;
 
         if (!user) {
           return;

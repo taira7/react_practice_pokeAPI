@@ -139,7 +139,6 @@ export const PopupCard: React.FC<PopupCardProps> = ({
     //あればSubCollectionにdocumentを追加
 
     await addDoc(favoriteCollectionRef, data); //自動生成されるid
-    // getFavData();
   };
 
   const removeFav = async (autoId: string) => {
@@ -154,8 +153,6 @@ export const PopupCard: React.FC<PopupCardProps> = ({
 
     const favDocRef = doc(favoriteCollectionRef, autoId);
     await deleteDoc(favDocRef);
-
-    // getFavData();
   };
 
   useEffect(() => {
