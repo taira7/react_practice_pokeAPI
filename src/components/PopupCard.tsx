@@ -105,7 +105,6 @@ export const PopupCard: React.FC<PopupCardProps> = ({
     if (getUserDocRef.exists()) {
       const querySnapshot = await getDocs(favoriteCollectionRef);
       querySnapshot.forEach((doc) => {
-        //
         const data: FavoriteData = doc.data() as FavoriteData;
         if (data.id === details.id) {
           setFavorite(true);
